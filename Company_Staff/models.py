@@ -683,7 +683,7 @@ class CustomerHistory(models.Model):
 #..........................Bill...........................#
 
 class Bill(models.Model):
-    Vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE,null=True,blank=True)
+    Vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True,blank=True)
     Bill_Number = models.CharField(max_length=220,null=True,blank=True)
     Reference_Number = models.IntegerField(null=True)
     Purchase_Order_Number = models.CharField(max_length=220,null=True,blank=True)
@@ -710,6 +710,7 @@ class Bill(models.Model):
     Status = models.CharField(max_length=220,null=True,blank=True)
     Login_Details = models.ForeignKey(LoginDetails, on_delete=models.CASCADE,null=True,blank=True)
     Company = models.ForeignKey(CompanyDetails,on_delete=models.CASCADE)
+    Action = models.CharField(max_length=220,null=True,blank=True)
 
 
 class BillItems(models.Model):

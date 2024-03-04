@@ -10795,29 +10795,36 @@ def bill_list(request):
         log_id = request.session['login_id']
         if 'login_id' not in request.session:
             return redirect('/')
-    log_details= LoginDetails.objects.get(id=log_id)
-    if log_details.user_type == 'Staff':
-        dash_details = StaffDetails.objects.get(login_details=log_details)
-        bill = Bill.objects.filter(company=dash_details.company)
-        allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
-        content = {
-                'details': dash_details,
-                'bills':bill,
-                'allmodules': allmodules,
-                'log_id':log_details
-        }
-        return render(request,'zohomodules/Bills/Bill_list.html',content)
-    if log_details.user_type == 'Company':
-        dash_details = CompanyDetails.objects.get(login_details=log_details)
-        bill= Bill.objects.filter(company=dash_details)
-        allmodules= ZohoModules.objects.get(company=dash_details,status='New')
-        content = {
-                'details': dash_details,
-                'bills':bill,
-                'allmodules': allmodules,
-                'log_id':log_details
-        }
-        return render(request,'zohomodules/Bills/Bill_list.html',content)
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Staff':
+            dash_details = StaffDetails.objects.get(login_details=log_details)
+            try:
+                bill = Bill.objects.filter(Company= dash_details.company)
+            except Bill.DoesNotExist:
+                bill = None
+                
+            allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+            content = {
+                    'details': dash_details,
+                    'bills':bill,
+                    'allmodules': allmodules,
+                    'log_id':log_details
+            }
+            return render(request,'zohomodules/Bills/Bill_list.html',content)
+        if log_details.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_details)
+            try:
+                bill = Bill.objects.filter(Company= dash_details.company)
+            except Bill.DoesNotExist:
+                bill = None
+            allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            content = {
+                    'details': dash_details,
+                    'bills':bill,
+                    'allmodules': allmodules,
+                    'log_id':log_details
+            }
+            return render(request,'zohomodules/Bills/Bill_list.html',content)
     
 def add_bill(request):
 
@@ -10829,25 +10836,27 @@ def add_bill(request):
         if log_details.user_type == 'Company':
             dash_details = CompanyDetails.objects.get(login_details=log_details,superadmin_approval=1,Distributor_approval=1)
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
+            vendor = Vendor.objects.filter(company = dash_details)
             item_obj = Items.objects.filter(company = dash_details)
             context = {
             'details': dash_details,
             'log_details':log_details,
             'dash_details':dash_details,
+            'vendor':vendor,
             'allmodules':allmodules,
-            
-            
             'item_obj':item_obj
             }
         
         if log_details.user_type == 'Staff':
             dash_details = StaffDetails.objects.get(login_details=log_details)
             allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
+            vendor = Vendor.objects.filter(company = dash_details.company)
             item_obj = Items.objects.filter(company = dash_details.company)
             context = {
             'details': dash_details,
             'log_details':log_details,
             'dash_details':dash_details,
+            'vendor':vendor,
             'allmodules':allmodules,
             'item_obj':item_obj
             }
@@ -10886,19 +10895,29 @@ def add_bill_func(request):
                 Balance = request.POST.get('Balance')
                 Status = request.POST.get('Status')
 
-                item_obj = Items.objects.get(id=item)
+                company = CompanyDetails.objects.get(id=company)
+                vendor = Vendor.objects.get(id=vendor)
                 action = request.POST.get('save')
                 bill = Bill(Bill_Number=Bill_Number,
-                                item=item_obj,
-                                stock_keeping=stock,
-                                godown_name=gname,
-                                godown_address=gaddress,
-                                distance=distance,
-                                stock_in_hand = item_obj.current_stock,
-                                hsn = item_obj.hsn_code,
-                                login_details=log_details,
-                                company = company,
-                                action = action)
+                            Reference_Number=Reference_Number,
+                            Purchase_Order_Number=Purchase_Order_Number,
+                            Bill_Date=Bill_Date,
+                            Company_Payment_Terms=Company_Payment_Terms,
+                            Due_Date=Due_Date,
+                            Cheque_Number = Cheque_Number,
+                            UPI_Id = UPI_Id,
+                            Description=Description,
+                            Document= Document,
+                            Sub_Total = Sub_Total,
+                            CGST = CGST,
+                            SGST = SGST,
+                            Tax_Amount_IGST = Tax_Amount_IGST,
+                            Shipping_Charge = Shipping_Charge,
+                            Adjustment = Adjustment,
+                            Grand_Total =Grand_Total,
+                            Advance_amount_Paid = Advance_amount_Paid,
+                            Balance = Balance,
+                            Status = Status,)
                 bill.save()
 
                 godown_history = GodownHistory(company = company,
@@ -10913,26 +10932,48 @@ def add_bill_func(request):
             staff = StaffDetails.objects.get(login_details=log_details)
             company = staff.company
             if request.method == 'POST':
-                date = request.POST.get('Date')
-                item = request.POST.get('Item')
-                gname = request.POST.get('Gname')
-                gaddress = request.POST.get('Gaddress')
-                stock = request.POST.get('Stock')
-                distance = request.POST.get('Distance')
-                item_obj = Items.objects.get(id=item)
-                action = request.POST.get('save')
-                godown = Godown(date=date,
-                                item=item_obj,
-                                stock_keeping=stock,
-                                godown_name=gname,
-                                godown_address=gaddress,
-                                distance=distance,
-                                stock_in_hand = item_obj.current_stock,
-                                hsn = item_obj.hsn_code,
-                                login_details=log_details,
-                                company = company,
-                                action = action)
-                godown.save()
+                Bill_Number = request.POST.get('Bill_No')
+                Reference_Number = request.POST.get('Reference_No')
+                Purchase_Order_Number = request.POST.get('Purchase_Order_NO')
+                Bill_Date = request.POST.get('Bill_Date')
+                Company_Payment_Terms = request.POST.get('Company_Payment_Terms')
+                Due_Date = request.POST.get('Due_Date')
+                Cheque_Number = request.POST.get('Cheque_Number')
+                UPI_Id = request.POST.get('UPI_Id' )
+
+                Description = request.POST.get('Description')
+                Document = request.POST.get('Document')
+                Sub_Total = request.POST.get('Sub_Total')
+                CGST = request.POST.get('CGST')
+                SGST = request.POST.get('SGST')
+                Tax_Amount_IGST = request.POST.get('Tax_Amount_IGST')
+                Shipping_Charge = request.POST.get('Shipping_Charge')
+                Adjustment = request.POST.get('Adjustment')
+                Grand_Total = request.POST.get('Grand_Total')
+                Advance_amount_Paid = request.POST.get('Advance_amount_Paid')
+                Balance = request.POST.get('Balance')
+                Status = request.POST.get('Status')
+                bill = Bill(Bill_Number=Bill_Number,
+                            Reference_Number=Reference_Number,
+                            Purchase_Order_Number=Purchase_Order_Number,
+                            Bill_Date=Bill_Date,
+                            Company_Payment_Terms=Company_Payment_Terms,
+                            Due_Date=Due_Date,
+                            Cheque_Number = Cheque_Number,
+                            UPI_Id = UPI_Id,
+                            Description=Description,
+                            Document= Document,
+                            Sub_Total = Sub_Total,
+                            CGST = CGST,
+                            SGST = SGST,
+                            Tax_Amount_IGST = Tax_Amount_IGST,
+                            Shipping_Charge = Shipping_Charge,
+                            Adjustment = Adjustment,
+                            Grand_Total =Grand_Total,
+                            Advance_amount_Paid = Advance_amount_Paid,
+                            Balance = Balance,
+                            Status = Status,)
+                bill.save()
 
                 godown_history = GodownHistory(company = company,
                                                login_details=log_details,
@@ -10943,4 +10984,43 @@ def add_bill_func(request):
 
         
         messages.success(request,'Added Successfully')
-        return redirect('add_godown')
+        return redirect('add_bill')
+
+
+
+
+@login_required(login_url='login')
+def get_vendordet(request):
+
+    company= company_details.objects.get(user = request.user)
+
+    # fname = request.POST.get('fname')
+    # lname = request.POST.get('lname')
+    id = request.POST.get('id')
+    vdr = vendor_table.objects.get(user=company.user_id, id=id)
+    vemail = vdr.vendor_email
+    gstnum = vdr.gst_number
+    gsttr = vdr.gst_treatment
+    source_supply = vdr.source_supply
+    att_ent_ion = vdr.battention
+    cou_nt_ry = vdr.bcountry
+    a_ddres_s = vdr.baddress
+    c_it_y = vdr.bcity
+    s_ta_te = vdr.bstate
+    z_i_p = vdr.bzip
+    ph_o_ne = vdr.bphone
+    f_ax_bill_s = vdr.bfax
+
+    return JsonResponse({'vendor_email' :vemail, 
+                         'gst_number' : gstnum,
+                         'gst_treatment':gsttr,
+                         'source_supply':source_supply,
+                         'att_ent_ion' :att_ent_ion,
+                         'cou_nt_ry' :cou_nt_ry,
+                         'a_ddres_s' :a_ddres_s,
+                         'c_it_y' :c_it_y,
+                         's_ta_te' :s_ta_te,
+                         'z_i_p' :z_i_p,
+                         'ph_o_ne' :ph_o_ne,
+                         'f_ax_bill_s' :f_ax_bill_s
+                         },safe=False)

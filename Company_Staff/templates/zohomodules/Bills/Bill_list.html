@@ -11,7 +11,7 @@
           <ol class="breadcrumb">
             {% if log_id.user_type == 'Staff' %} <li class="breadcrumb-item"><a href="{% url 'staff_dashboard' %}" class="text-warning-emphasis">Dashboard</a></li>{% endif %}
             {% if log_id.user_type == 'Company' %} <li class="breadcrumb-item"><a href="{% url 'company_dashboard' %}" class="text-warning-emphasis">Dashboard</a></li>{% endif %}
-             <li class="breadcrumb-item"><a href="{% url 'employee_list' %}" class="text-warning-emphasis">Bill_list</a></li>
+             <li class="breadcrumb-item"><a href="{% url 'bill_list' %}" class="text-warning-emphasis">Bill_list</a></li>
              <li class="breadcrumb-item" aria-current="page">Over view</li>
           </ol>
       </nav>
@@ -19,7 +19,7 @@
           <div class="col-md-12 col-sm-12 col-lg-12 flex-column">
               <div class="card mb-3 bg-black shadow p-3 mb-5 rounded" style="max-width: 1200px;">
                 <div class="row mt-4">
-                  <div class="col-7 col-sm-7 col-lg-7"><a class="text-white" style="font-size: 2rem;">All Employees</a></div>
+                  <div class="col-7 col-sm-7 col-lg-7"><a class="text-white" style="font-size: 2rem;">BILLS</a></div>
                   <div class="row">
                     <div class="col-md-3 col-sm-3"><input type="text" id="search" class="form-control bg-light text-dark" placeholder="Search.." autocomplete="off"></div>
                     <div class="col-md-4 col-sm-2">
@@ -28,9 +28,9 @@
                           <i  class="fas fa-sort m-1"></i>
                         </a>
                         <div class="dropdown-menu m-1">
-                          <a class="dropdown-item" href="{% url 'employee_list' %}">All</a>
-                          <a class="dropdown-item" onclick="sortTableName()">Employee Name</a>
-                          <a class="dropdown-item" onclick="sortTableSalary()">Employee Salary</a>
+                          <a class="dropdown-item" href="{% url 'bill_list' %}">All</a>
+                          <a class="dropdown-item" onclick="sortTableName()">Vendor Name</a>
+                          <a class="dropdown-item" onclick="sortTableSalary()">Bill No</a>
                         </div>
                       </div>
                     </div>
@@ -47,10 +47,10 @@
                       </a>
                       <div class="dropdown-menu m-1">
                         <a class="dropdown-item" onclick="applyFilter('All')">All</a>
-                        <a class="dropdown-item" onclick="applyFilter('Active')">Active</a>
-                        <a class="dropdown-item" onclick="applyFilter('Inactive')">Inactive</a>
+                        <a class="dropdown-item" onclick="applyFilter('Active')">Save</a>
+                        <a class="dropdown-item" onclick="applyFilter('Inactive')">Draft</a>
                       </div>
-                      <a  class="btn btn-outline-warning text-right px-3 py-2 flex-sm-row" role="button"  href="{% url 'payroll_employee_create' %}">
+                      <a  class="btn btn-outline-warning text-right px-3 py-2 flex-sm-row" role="button"  href="{% url 'add_bill' %}">
                         <i class="fa fa-plus fs-4" ><span>New</span></i>
                       </a>
                     </div>
@@ -68,22 +68,23 @@
                   <th style="text-align: center;">VENDOR NAME</th>
                   <th style="text-align: center;">MAIL ID</th>
                   <th style="text-align: center;">AMOUNT</th>
-                  <th style="text-align: center;">STATUS</th>
                   <th style="text-align: center;">BALANCE</th>
+                  <th style="text-align: center;">STATUS</th>
+                  <th style="text-align: center;">ACTION</th>
                 </tr>
               </thead>
               <tbody >
                 {% for i in bills %}
                   <tr id="over" class='clickable-row' data-href="{% url 'employee_overview' i.id %}">
                     <td style="text-align: center;">{{forloop.counter}}</td>
-                    <td style="text-align: center;">{{i.joindate | date:'d-m-Y'}}</td>
-                    <td style="text-align: center;">{{i.first_name}} {{i.last_name}}</td>
-                    <td style="text-align: center;">{{i.email}}</td>
-                    <td style="text-align: center;">{{i.emp_number}}</td>
-                    <td style="text-align: center;">{{i.designation}}</td>
-                    <td style="text-align: center;">{{i.salary_type }}</td>
-                    <td style="text-align: center;">{{i.status}}</td>
-                    <td style="text-align: center;">{{i.salary}}</td>
+                    <td style="text-align: center;">{{i.Bill_Date | date:'d-m-Y'}}</td>
+                    <td style="text-align: center;">{{i.Bill_Number}}</td>
+                    <td style="text-align: center;">{{i.Vendor.first_name}} {{i.Vendor.last_name}}</td>
+                    <td style="text-align: center;">{{i.Vendor.vendor_email}}</td>
+                    <td style="text-align: center;">{{i.Grand_Total}}</td>
+                    <td style="text-align: center;">{{i.Balance}}</td>
+                    <td style="text-align: center;">{{i.Status }}</td>
+                    <td style="text-align: center;">{{i.Action}}</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -211,9 +212,8 @@
 </div>
   </div>
   </div>
-
 <script>
-  function sortTableName() {
+  function sortTableSalary() {
     var table, rows, switching, i, x, y, shouldSwitch;
     table = document.getElementById("employeetable");
     switching = true;
@@ -224,17 +224,26 @@
         shouldSwitch = false;
         x = rows[i].getElementsByTagName("td")[2];
         y = rows[i + 1].getElementsByTagName("td")[2];
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+        // Extract the numerical part of bill numbers
+        var xValue = parseInt(x.innerHTML.substring(1)); // Remove the 'B' prefix and parse as integer
+        var yValue = parseInt(y.innerHTML.substring(1)); // Remove the 'B' prefix and parse as integer
+        // Check if the two rows should switch places
+        if (xValue > yValue) {
           shouldSwitch = true;
           break;
         }
       }
       if (shouldSwitch) {
-          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-          switching = true;
+        // If a switch is needed, swap the rows and set the switching flag to true
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
       }
     }
   }
+
+// Function to extract alphanumeric characters
+
+
 
   function sortTableSalary() {
     var table, rows, switching, i, x, y, shouldSwitch;
@@ -245,8 +254,8 @@
       rows = table.rows;
       for (i = 1; i < rows.length - 1; i++) {
         shouldSwitch = false;
-        x = rows[i].getElementsByTagName("td")[8];
-        y = rows[i + 1].getElementsByTagName("td")[8];
+        x = rows[i].getElementsByTagName("td")[2];
+        y = rows[i + 1].getElementsByTagName("td")[2];
         if (parseInt(x.innerHTML) > parseInt(y.innerHTML)) {
           shouldSwitch = true;
           break;
@@ -306,7 +315,6 @@
     const ws1 = XLSX.utils.table_to_sheet(table1);
     const wb1 = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb1, ws1, 'Sheet1');
-    XLSX.writeFile(wb1, 'pay roll.xlsx');
   }
 </script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
