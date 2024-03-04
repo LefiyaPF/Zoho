@@ -10870,17 +10870,25 @@ def add_bill_func(request):
                 Bill_Date = request.POST.get('Bill_Date')
                 Company_Payment_Terms = request.POST.get('Company_Payment_Terms')
                 Due_Date = request.POST.get('Due_Date')
-                Cheque_Number = request.POST.get(Cheque_Number)
-                UPI_Id = request.POST.get(UPI_Id )
-                UPI_Id = request.POST.get(UPI_Id )
-                UPI_Id = request.POST.get(UPI_Id )
-                UPI_Id = request.POST.get(UPI_Id )
-                UPI_Id = request.POST.get(UPI_Id )
-                
+                Cheque_Number = request.POST.get('Cheque_Number')
+                UPI_Id = request.POST.get('UPI_Id' )
+
+                Description = request.POST.get('Description')
+                Document = request.POST.get('Document')
+                Sub_Total = request.POST.get('Sub_Total')
+                CGST = request.POST.get('CGST')
+                SGST = request.POST.get('SGST')
+                Tax_Amount_IGST = request.POST.get('Tax_Amount_IGST')
+                Shipping_Charge = request.POST.get('Shipping_Charge')
+                Adjustment = request.POST.get('Adjustment')
+                Grand_Total = request.POST.get('Grand_Total')
+                Advance_amount_Paid = request.POST.get('Advance_amount_Paid')
+                Balance = request.POST.get('Balance')
+                Status = request.POST.get('Status')
 
                 item_obj = Items.objects.get(id=item)
                 action = request.POST.get('save')
-                godown = Godown(date=date,
+                bill = Bill(Bill_Number=Bill_Number,
                                 item=item_obj,
                                 stock_keeping=stock,
                                 godown_name=gname,
@@ -10891,7 +10899,7 @@ def add_bill_func(request):
                                 login_details=log_details,
                                 company = company,
                                 action = action)
-                godown.save()
+                bill.save()
 
                 godown_history = GodownHistory(company = company,
                                                login_details=log_details,
