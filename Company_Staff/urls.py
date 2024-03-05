@@ -293,8 +293,9 @@ urlpatterns = [
 
     path('bill_list',views.bill_list,name="bill_list"),
     path('add_bill',views.add_bill,name="add_bill"),
-    path('get_vendordet',views.get_vendordet,name="get_vendordet"),
-    
+    path('get_vendor_details/<int:vendor_id>/',views.get_vendor_details, name='get_vendor_details'),
+    path('update_place_of_supply/',views.update_place_of_supply, name='update_place_of_supply'),
+
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 
     

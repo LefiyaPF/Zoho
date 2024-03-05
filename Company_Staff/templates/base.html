@@ -389,7 +389,7 @@
                 <hr>
                 {% endif %}
                 {% if allmodules.bills == 1  %}
-                <a href="" class="d-flex align-items-center gap-2 dropdown-item">
+                <a href="{% url 'bill_list' %}" class="d-flex align-items-center gap-2 dropdown-item">
                   
                   <div class="d-flex">
                     <p class="mb-0 fs-3">Bills</p>
@@ -646,30 +646,7 @@
             </li>
 
             <!--  Bill modules -->
-            <li class="sidebar-item">
-              <button class="btn dropdown-btn" style="margin-top: 10px; border: none;outline: none; color: black;width: 100%;text-align: left;color: white;">
-                <span>
-                  <label><i class="fas fa-file-invoice-dollar text-danger" style="margin-right: 10px;"></i></label>
-                </span>
-                <a href="{% url 'bill_list' %}" style="color: white;"><span><label>Bill</label></span></a>
-                <i class="fa fa-caret-down" style="margin-left: 65%;"></i>
-              </button>
-              <div class="dropdown-container" style="background-color: rgb(0, 0, 0);padding: 20px;justify-content: center;color: white;">
-                {% if allmodules.reports == 1  %}
-                <a href="" class="d-flex align-items-center gap-2 dropdown-item">
-                  
-                  <div class="d-flex">
-                    <p class="mb-0 fs-3">Reports</p>
-                    
-                    
-                  </div>
-                 
-                </a>
-                <hr>
-                {% endif %}
-                
-              </div>
-            </li>
+            
 
             
             

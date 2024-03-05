@@ -10837,12 +10837,14 @@ def add_bill(request):
             dash_details = CompanyDetails.objects.get(login_details=log_details,superadmin_approval=1,Distributor_approval=1)
             allmodules= ZohoModules.objects.get(company=dash_details,status='New')
             vendor = Vendor.objects.filter(company = dash_details)
+            customer = Customer.objects.filter(company = dash_details)
             item_obj = Items.objects.filter(company = dash_details)
             context = {
             'details': dash_details,
             'log_details':log_details,
             'dash_details':dash_details,
             'vendor':vendor,
+            'customer':customer,
             'allmodules':allmodules,
             'item_obj':item_obj
             }
@@ -10851,6 +10853,7 @@ def add_bill(request):
             dash_details = StaffDetails.objects.get(login_details=log_details)
             allmodules= ZohoModules.objects.get(company=dash_details.company,status='New')
             vendor = Vendor.objects.filter(company = dash_details.company)
+            customer = Customer.objects.filter(company = dash_details.company)
             item_obj = Items.objects.filter(company = dash_details.company)
             context = {
             'details': dash_details,
@@ -10988,39 +10991,58 @@ def add_bill_func(request):
 
 
 
+def get_vendor_details(request, vendor_id):
+    try:
+        vendor = Vendor.objects.get(id=vendor_id)
+        # Assuming Vendor model has fields like email, billing_address, gst_treatment, gst, etc.
+        data = {
+            'email': vendor.vendor_email,
+            'gst': vendor.gst_treatment,
+            'gstin':vendor.gst_number,
+            'baddress':vendor.billing_address,
+            'psupply':vendor.source_of_supply,
+            
+            # Add other fields as needed
+        }
+        return JsonResponse(data)
+    except Vendor.DoesNotExist:
+        return JsonResponse({'error': 'Vendor not found'}, status=404)
 
-@login_required(login_url='login')
-def get_vendordet(request):
+def get_customer_details(request, vendor_id):
+    try:
+        customer = Customer.objects.get(id=vendor_id)
+        # Assuming Vendor model has fields like email, billing_address, gst_treatment, gst, etc.
+        data = {
+            'email': customer.customer_email,
+            'GSTTypeCustomer': customer.GST_treatement,
+            'gstnum':customer.GST_number,
+            'plsupply':customer.place_of_supply,
+            # Add other fields as needed
+        }
+        return JsonResponse(data)
+    except Vendor.DoesNotExist:
+        return JsonResponse({'error': 'Vendor not found'}, status=404)
 
-    company= company_details.objects.get(user = request.user)
 
-    # fname = request.POST.get('fname')
-    # lname = request.POST.get('lname')
-    id = request.POST.get('id')
-    vdr = vendor_table.objects.get(user=company.user_id, id=id)
-    vemail = vdr.vendor_email
-    gstnum = vdr.gst_number
-    gsttr = vdr.gst_treatment
-    source_supply = vdr.source_supply
-    att_ent_ion = vdr.battention
-    cou_nt_ry = vdr.bcountry
-    a_ddres_s = vdr.baddress
-    c_it_y = vdr.bcity
-    s_ta_te = vdr.bstate
-    z_i_p = vdr.bzip
-    ph_o_ne = vdr.bphone
-    f_ax_bill_s = vdr.bfax
+def update_place_of_supply(request):
+    if request.method == 'POST':
+        vendor_id = request.POST.get('vendor_id')
+        new_place_of_supply = request.POST.get('place_of_supply')
 
-    return JsonResponse({'vendor_email' :vemail, 
-                         'gst_number' : gstnum,
-                         'gst_treatment':gsttr,
-                         'source_supply':source_supply,
-                         'att_ent_ion' :att_ent_ion,
-                         'cou_nt_ry' :cou_nt_ry,
-                         'a_ddres_s' :a_ddres_s,
-                         'c_it_y' :c_it_y,
-                         's_ta_te' :s_ta_te,
-                         'z_i_p' :z_i_p,
-                         'ph_o_ne' :ph_o_ne,
-                         'f_ax_bill_s' :f_ax_bill_s
-                         },safe=False)
+        try:
+            # Retrieve the vendor object
+            vendor = Vendor.objects.get(id=vendor_id)
+            # Update the place of supply
+            vendor.source_of_supply = new_place_of_supply
+            # Save the changes
+            vendor.save()
+
+            # Return a success response
+            return JsonResponse({'message': 'Place of supply updated successfully'})
+        
+        except Vendor.DoesNotExist:
+            # If the vendor is not found, return an error response
+            return JsonResponse({'error': 'Vendor not found'}, status=404)
+    else:
+        # Return an error response if the request method is not POST
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
