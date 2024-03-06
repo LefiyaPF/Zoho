@@ -10991,6 +10991,9 @@ def add_bill_func(request):
 
 
 
+from django.http import JsonResponse
+from .models import Vendor
+
 def get_vendor_details(request, vendor_id):
     try:
         vendor = Vendor.objects.get(id=vendor_id)
@@ -10998,15 +11001,19 @@ def get_vendor_details(request, vendor_id):
         data = {
             'email': vendor.vendor_email,
             'gst': vendor.gst_treatment,
-            'gstin':vendor.gst_number,
-            'baddress':vendor.billing_address,
-            'psupply':vendor.source_of_supply,
-            
+            'gstin': vendor.gst_number,
+            'baddress': vendor.billing_address,
+            'psupply': vendor.source_of_supply,
+            'billing_address': vendor.billing_address,
+            'billing_city': vendor.billing_city,
+            'billing_state': vendor.billing_state,
+            'billing_pin_code': vendor.billing_pin_code,
             # Add other fields as needed
         }
         return JsonResponse(data)
     except Vendor.DoesNotExist:
         return JsonResponse({'error': 'Vendor not found'}, status=404)
+
 
 def get_customer_details(request, vendor_id):
     try:
@@ -11046,3 +11053,8 @@ def update_place_of_supply(request):
     else:
         # Return an error response if the request method is not POST
         return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+
+def trail(request):
+    return render(request,'zohomodules/Bills/trail.html')

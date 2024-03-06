@@ -154,6 +154,7 @@ class TrialPeriod(models.Model):
     def is_active(self):
         return self.end_date >= timezone.now().date()
 
+
 class PreviousPaymentTerms(models.Model):
     distributor = models.ForeignKey(DistributorDetails, on_delete=models.CASCADE, related_name='previous_plans', null=True, blank=True)
     company = models.ForeignKey(CompanyDetails, on_delete=models.CASCADE, related_name='previous_plans', null=True, blank=True)
@@ -167,3 +168,5 @@ class Company_Payment_Term(models.Model):
     term_name =models.CharField(max_length=100,null=True,blank=True,default='')
     days =models.IntegerField(null=True,default=0)
     status =models.CharField(max_length=200,null=True,blank=True,default='')
+
+
