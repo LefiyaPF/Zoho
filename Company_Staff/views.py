@@ -11058,3 +11058,7 @@ def update_place_of_supply(request):
 
 def trail(request):
     return render(request,'zohomodules/Bills/trail.html')
+
+
+def Bill_overview(request):
+    return render(request,'zohomodules/Bills/overview_page.html')

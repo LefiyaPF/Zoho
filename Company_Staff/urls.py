@@ -296,6 +296,8 @@ urlpatterns = [
    
     path('get_vendor_details/<int:vendor_id>/',views.get_vendor_details, name='get_vendor_details'),
     path('update_place_of_supply/',views.update_place_of_supply, name='update_place_of_supply'),
+    path('Bill_overview',views.Bill_overview,name="Bill_overview"),
+    
 
     path('trail',views.trail,name="trail"),
 

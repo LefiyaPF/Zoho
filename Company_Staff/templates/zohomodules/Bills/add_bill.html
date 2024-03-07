@@ -790,7 +790,7 @@ li{
                                                     <label style="color: white;">Primary Contact</label>
                                                 </div>
                                                 <div class="col-sm-12 col-md-2 col-lg-2" >
-                                                    <select id="select"  name="salutation" class="form-select bg-light text-dark mt-2 " >
+                                                    <select id="select1C"  name="salutation" class="form-select bg-light text-dark mt-2 " >
                                                     
                                                         <option value="Mr">Mr</option>
                                                         <option value="Mrs">Mrs</option>
@@ -822,7 +822,18 @@ li{
                                                 </div>
                                             </div>
                             
-                                           
+                                            <div class="form-group row mt-4">
+                                                <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label class="text-white">Customer Display Name</label></div>
+                                                <div class="col-sm-12 col-md-6 col-lg-7">
+                                                   
+                                                    <select class="form-control bg-light text-dark "  name="v_display_names" id="v_display_names">
+                                                        
+                                                    </select>
+                                                    
+                                                       
+                                                        
+                                                </div>
+                                            </div>
                             
                                            
                             
@@ -948,7 +959,7 @@ li{
                                                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white"  > GSTIN/UIN*</label>
                                                         
                                                         <div class=" col-sm-12 col-md-3 col-lg-3">
-                                                            <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gstInput" > 
+                                                            <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gstInput" aria-placeholder="11ABCDE1234F5Z6"> 
                                                             <span id="gstMessage"></span>       
                                     
                                                         </div>
@@ -963,7 +974,7 @@ li{
                                                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > PAN</label>
                                                         
                                                         <div class=" col-sm-12 col-md-3 col-lg-3">
-                                                            <input type="text" class="form-control bg-light text-dark"  id="panInput"  name="pan_number">  
+                                                            <input type="text" class="form-control bg-light text-dark"  id="panInput"  name="pan_number" placeholder="ABCDE1234D">  
                                                             <span id="panMessage"></span>    
                             
                                     
@@ -1641,7 +1652,8 @@ li{
         </div>
     </div>
         <!-- ......................new vendor modal................. -->
-      
+        
+    
         <div class="modal fade" id="newvendor">
             <div class="modal-dialog modal-xl">
               <div class="modal-content" style="background: rgb(0, 0, 0);border-radius: 20px;">
@@ -1699,8 +1711,8 @@ li{
                               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label class="text-white">Vendor Display Name</label></div>
                                <div class="col-sm-12 col-md-6 col-lg-6">
                                   
-                                      <select  name="v_display_name" id="v_display_name" class="form-control bg-light text-dark " onclick="vendor_display()">
-                                      <option class="text-dark" id="select2"></option>
+                                      <select  name="v_display_name" id="v_display_name" class="form-control bg-light text-dark">
+                                     
                                           
                                       </select> 
                     
@@ -1753,7 +1765,7 @@ li{
                               <hr style="border: none; height: 2px; background-color: #ffcc00; margin: 20px 0;">
           
                               <div class="toggle1" style="color: rgb(230, 171, 45);font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                                  <a href="">More Details</a>
+                                  <a href="" style="color: rgb(230, 171, 45)">More Details</a>
           
                                </div>
            
@@ -1862,10 +1874,10 @@ li{
                               </div>
                               <fieldset3 id="gstn" style="display: none;">
                                   <div class="row mt-4">
-                                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white"  > GSTIN/UIN*</label>
+                                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > GSTIN/UIN*</label>
                                        
                                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input" onmouseout="gst_check()"> 
+                                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input" placeholder="11ABCDE1234F5Z6" onmouseout="gst_check()"> 
                                           <label id="gst_label"></label>     
                   
                                       </div>
@@ -1880,7 +1892,7 @@ li{
                                       <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > PAN</label>
                                        
                                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                                          <input type="text" class="form-control bg-light text-dark" id="pan_input" onmouseout="pan_check()" name="pan_number">  
+                                          <input type="text" class="form-control bg-light text-dark" id="pan_input" onmouseout="pan_check()" name="pan_number" placeholder="ABCDE1234D">  
                                           <label id="pan_label"></label>     
               
                   
@@ -2315,8 +2327,44 @@ li{
             </div>  
           </div> 
         
+<!-- ......................end vendor modal................. -->
+          
+          
+<script>
+    
+const Ttle = document.getElementById('select1C');
+const ftname = document.getElementById('ftname');
+const ltname = document.getElementById('ltname');
+const vDisplayNames = document.getElementById('v_display_names');
 
-              
+Ttle.addEventListener('input', updateOutputFields);
+ftname.addEventListener('input', updateOutputFields);
+ltname.addEventListener('input', updateOutputFields);
+
+// Function to update the output fields
+function updateOutputFields() {
+    const selectedTitle = Ttle.value;
+    const selectedFname = ftname.value;
+    const selectedLname = ltname.value;
+
+    // Clear existing options
+    vDisplayNames.innerHTML = '';
+ // Add new options based on input field values
+ const option1 = document.createElement('option');
+    option1.text = selectedTitle + ' ' + selectedFname + ' ' + selectedLname;
+    vDisplayNames.add(option1);
+
+   
+
+    const option2 = document.createElement('option');
+    option2.text = selectedFname + ' ' + selectedLname;
+    vDisplayNames.add(option2);
+
+    const option3 = document.createElement('option');
+    option3.text = selectedLname + ' ' + selectedFname;
+    vDisplayNames.add(option3);
+}
+</script>
           <script>
 
                 const Title = document.getElementById('select1');
@@ -2324,6 +2372,38 @@ li{
                 const laname = document.getElementById('lname');
                 const vDisplayName = document.getElementById('v_display_name');
 
+Title.addEventListener('input', updateOutputFields);
+fname.addEventListener('input', updateOutputFields);
+laname.addEventListener('input', updateOutputFields);
+
+// Function to update the output fields
+function updateOutputFields() {
+    const selectedTitle = Title.value;
+    const selectedFname = fname.value;
+    const selectedLname = laname.value;
+
+    // Clear existing options
+    vDisplayName.innerHTML = '';
+ // Add new options based on input field values
+ const option1 = document.createElement('option');
+    option1.text = selectedTitle + ' ' + selectedFname + ' ' + selectedLname;
+    vDisplayName.add(option1);
+
+   
+
+    const option2 = document.createElement('option');
+    option2.text = selectedFname + ' ' + selectedLname;
+    vDisplayName.add(option2);
+
+    const option3 = document.createElement('option');
+    option3.text = selectedLname + ' ' + selectedFname;
+    vDisplayName.add(option3);
+}
+
+
+
+</script>
+<script>
 
             function gstPan_function(){
                 var x=document.getElementById('GSTT').value
