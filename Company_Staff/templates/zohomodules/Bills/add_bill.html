@@ -69,7 +69,29 @@
         }
     }
 </style>
-
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+            swal.fire({  
+              title: "Good job!",  
+              text: '{{ message }}',  
+              icon: "success",  
+              showConfirmButton: false,
+              timer: 2900
+            });  
+            {% elif message.tags == 'error' %}
+            Swal.fire({
+                icon: 'error',
+                title: "Ooops Error !",  
+                text: '{{ message }}',  
+                showConfirmButton: false,
+                timer: 2900
+            });
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
 <div class="body-wrapper">
     <div class="container-fluid">
         <nav aria-label="breadcrumb">
@@ -408,9 +430,10 @@
                                                     <label for="">CUSTOMER NAME *</label>
                                                 </div>
                                                 <div class="input-container col-sm-6">
-                                                    <select class="form-select bg-white text-center" name="Customer"
+                                                    <select class="form-control selectpicker bg-white text-center rounded-2 py-0"
+                                                    data-live-search="true" name="Customer"
                                                         id="SelectCustomer" required>
-                                                        <option value="" selected disabled>-- SELECT --</option>
+                                                        <option class="bg-white" value="" selected disabled>-- SELECT --</option>
                                                         {% for i in customer %}
                                                         <option value="{{i.id}}">{{i.first_name}} {{i.last_name}}
                                                         </option>
@@ -439,9 +462,9 @@
                                                             success: function (data) {
                                                                 // Update the placeholder elements with the fetched details
                                                                 $("#customerEmail").val(data.email);
-                                                                $("#GSTTypeCustomer").val(data.gst);
+                                                                $("#GSTTypeCustomer").val(data.GSTTypeCustomer);
                                                                 $("#gstnum").val(data.gstnum);
-                                                                $("#plsupply").val(data.psupply);
+                                                                $("#plsupply").val(data.plsupply);
 
                                                                 var placeOfSupplyDropdown = $("#PlaceOfSupplyCustomer");
 
@@ -612,14 +635,13 @@
                                             <br>
 
                                             <hr class="text-warning font-weight-bold"><br>
-                                            <table class="table table-bordered table-responsive text-white"
+                                            <div class="table-responsive">
+                                            <table class="table table-bordered text-white"
                                                 id="tab_logic">
                                                 <thead>
                                                     <tr>
                                                         <th class="text-center">Sl.No.</th>
                                                         <th class="text-center">Item Details<br>
-                                                            <a href="" data-toggle="modal" data-target="#newitem"
-                                                                class="text-capitalize">+ add item</a>
                                                         </th>
                                                         <th class="text-center">HSN</th>
                                                         <th class="text-center">Quantity</th>
@@ -640,7 +662,7 @@
                                                             <div class="d-flex">
 
                                                                 <select name='item[]' id='item0'
-                                                                    class="form-control item text-black border-0  select2"
+                                                                    class="form-control item text-black border-0 px-4 select2"
                                                                     style="color: black; background-color: white;"
                                                                     onchange="showRate(this.id,this.value)">
                                                                     <option value="" selected hidden>Select </option>
@@ -650,15 +672,16 @@
 
                                                                     {% endfor %}
                                                                 </select>
+                                                                
+                                                                    <a class="btn btn-warning text-right my-sm-0 my-2 px-3 py-2 mx-1 flex-sm-row"
+                                                                        role="button" data-toggle="modal"
+                                                                        data-target="#create_item" data-toggle="tooltip"
+                                                                        href="">
+                                                                        <i class="fa fa-plus fs-4"></i>
+                                                                    </a>
+                                                               
                                                             </div>
-                                                            <div class="input-container col-1">
-                                                                <a class="btn btn-warning text-right my-sm-0 my-2 px-3 py-2 flex-sm-row"
-                                                                    role="button" data-toggle="modal"
-                                                                    data-target="#commentModal" data-toggle="tooltip"
-                                                                    href="">
-                                                                    <i class="fa fa-plus fs-4"></i>
-                                                                </a>
-                                                            </div>
+                                                            
                                                         </td>
 
                                                         <td style="width: 80px;">
@@ -738,19 +761,15 @@
                                                         </td>
                                                         <td>
                                                             <button type="button" id="0"
-                                                                class="btn btn-outline-primary clone_row text-center mb-1 p-1 "
+                                                                class="btn btn-light font-weight-bold clone_row fa fa-clone px-1 my-1 py-1 mx-1"
                                                                 data-toggle="tooltip" data-placement="bottom"
-                                                                tooltip="Clone"
-                                                                style="width:25px; height: 25px; border-radius: 90% ">
-                                                                <i class="fa-solid fa-clone"></i>
+                                                                tooltip="Clone">
                                                             </button>
                                                             <br>
                                                             <button disabled type="button" id="0"
-                                                                class="btn remove_row text-center p-1"
+                                                                class="btn btn-danger remove_row py-1 mx-1 fa fa-close" style="padding-left: 6px;padding-right: 6px;"
                                                                 data-toggle="tooltip" data-placement="bottom"
-                                                                tooltip="Remove"
-                                                                style="width:25px; height: 25px; border-radius: 90% ">
-                                                                <i class="fa fa-window-close bg-dark text-dark"></i>
+                                                                tooltip="Remove">
                                                             </button>
                                                         </td>
 
@@ -764,6 +783,7 @@
                                             </table>
 
                                         </div>
+                                    </div>
                                     </div>
                                     <hr>
 
@@ -784,7 +804,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content" style="background: rgb(0, 0, 0);border-radius: 20px;">
             <div class="modal-header " style="background: rgb(0, 0, 0);">
-                <h3 class="m-3 text-uppercase">New Vendor</h3>
+                <h3 class="m-3 text-uppercase text-white">New Vendor</h3>
                 <button type="button" class="close px-2" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -1144,7 +1164,7 @@
 
                         <!------------------ Address Section Start------------- -->
 
-                        <fieldset5 id="address" style="display: none;">
+                        <fieldset5 id="adress" style="display: none;">
                             <div>
                                 <div class="row">
                                     <div class="col-sm-12 col-md-6 col-lg-6">
@@ -1533,14 +1553,14 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content" style="background: rgb(0, 0, 0);border-radius: 20px;">
             <div class="modal-header " style="background: rgb(0, 0, 0);">
-                <h3 class="m-3 text-uppercase">New Vendor</h3>
+                <h3 class="m-3 text-uppercase text-white" >New Customer</h3>
                 <button type="button" class="close px-2" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body" style="background: rgb(2, 2, 2);">
                 <div class="card p-3 m-3 bg-black">
-                    <form method="post" action="{% url 'add_customer' %}" enctype="multipart/form-data" class="mb-3">
+                    <form method="post" action="{% url 'add_customer_bill' %}" enctype="multipart/form-data" class="mb-3">
                         {% csrf_token %}
 
                         <div class="form-group row mt-4">
@@ -1589,7 +1609,7 @@
                             </div>
                             <div class="col-sm-12 col-md-6 col-lg-7">
 
-                                <select class="form-control bg-light text-dark " name="v_display_names"
+                                <select class="form-control bg-light text-dark " name="v_display_name"
                                     id="v_display_names">
 
                                 </select>
@@ -1656,8 +1676,8 @@
                             <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label>Customer Email</label></div>
                             <div class="col-sm-12 col-md-6 col-lg-7">
                                 <input type="email" class="form-control bg-light text-dark" name="vendor_email"
-                                    id="vendor-email" required>
-                                <span class=" text-danger mt-1" id="email-message-id" style="font-size: 10px;"></span>
+                                    id="customer-email" required>
+                                <span class=" text-danger mt-1" id="email-message-ids" style="font-size: 10px;"></span>
 
                             </div>
 
@@ -1669,26 +1689,26 @@
                                 <label class="col-form-label text-white">Customer phone</label>
                             </div>
                             <div class="col-sm-12 col-md-3 col-lg-3">
-                                <input id="workphone" type="text" class="form-control bg-light text-dark mt-2"
+                                <input id="workphones" type="text" class="form-control bg-light text-dark mt-2"
                                     pattern="[0-9]{7}" name="w_phone" placeholder="work phone" required>
-                                <span id="work-phone-message" class="mt-2 " style="font-size: 10px;"></span>
-                                <span id="workphone_label" class="mt-2 text-danger" style="font-size: 10px;"></span>
+                                <span id="work-phone-messages" class="mt-2 " style="font-size: 10px;"></span>
+                                <span id="workphone_labels" class="mt-2 text-danger" style="font-size: 10px;"></span>
                                 <div class="invalid-feedback"></div>
 
                             </div>
                             <div class=" col-sm-12 col-md-3 col-lg-4">
-                                <input id="mphone" type="text" pattern="[0-9]{10}"
+                                <input id="mphones" type="text" pattern="[0-9]{10}"
                                     class="form-control bg-light text-dark mt-2" name="m_phone"
                                     placeholder="mobile number" required>
-                                <span id="phone-message" class="mt-2 " style="font-size: 10px;"></span>
-                                <span id="mphone_label" class="mt-2 text-danger" style="font-size: 10px;"></span>
+                                <span id="phone-messages" class="mt-2 " style="font-size: 10px;"></span>
+                                <span id="mphone_labels" class="mt-2 text-danger" style="font-size: 10px;"></span>
                                 <div class="invalid-feedback"></div>
 
                             </div>
 
                             <hr style="border: none; height: 2px; background-color: #ffcc00; margin: 20px 0;">
 
-                            <div class="toggle1 section-toggle">
+                            <div class="toggle11 section-toggle">
                                 <a href="">Add More Details</a>
 
                             </div>
@@ -1697,7 +1717,7 @@
                         </div>
 
 
-                        <fieldset1 id="more_detail" class="more details" style="display: none;">
+                        <fieldset11 id="more_detail" class="more details" style="display: none;">
 
                             <div class="form-group row mt-4">
                                 <div class="col-sm-12 col-md-3 col-lg-3 col-form-label">
@@ -1738,17 +1758,17 @@
                                         onclick="mobile_phone()" name="website">
                                 </div>
                             </div>
-                        </fieldset1>
+                        </fieldset11>
 
 
                         <hr style="border: none; height: 2px; background-color: #ffcc00; margin: 20px 0;">
 
                         <div class="section-3">
 
-                            <div class="toggle2 section-toggle"> <a href="">Other Details </a> </div>
-                            <div class="toggle3 section-toggle"> <a href="">Address </a> </div>
-                            <div class="toggle4 section-toggle"><a href="">Contact Persons </a></div>
-                            <div class="toggle7 section-toggle"><a href="">Remarks</a></div>
+                            <div class="toggle21 section-toggle"> <a href="">Other Details </a> </div>
+                            <div class="toggle31 section-toggle"> <a href="">Address </a> </div>
+                            <div class="toggle41 section-toggle"><a href="">Contact Persons </a></div>
+                            <div class="toggle71 section-toggle"><a href="">Remarks</a></div>
 
                         </div>
 
@@ -1791,7 +1811,7 @@
 
                                     <div class=" col-sm-12 col-md-3 col-lg-3">
                                         <input type="text" class="form-control bg-light text-dark" name="gst_number"
-                                            id="gst_Input">
+                                            id="gst_Input" placeholder="11ABCDE1234F5Z6">
                                         <span id="gst_Message"></span>
 
                                     </div>
@@ -1807,7 +1827,7 @@
 
                                     <div class=" col-sm-12 col-md-3 col-lg-3">
                                         <input type="text" class="form-control bg-light text-dark" id="pan_Input"
-                                            name="pan_number">
+                                            name="pan_number" placeholder="ABCDE1234D">
                                         <span id="pan_Message"></span>
 
 
@@ -1999,11 +2019,11 @@
                                     Terms</label>
 
                                 <div class=" col-sm-12 col-md-3 col-lg-3">
-                                    <select name="payment_terms" id="paytearm-select"
+                                    <select name="payment_terms" id="paytearm-selects"
                                         class="form-control bg-light text-dark">
 
 
-                                        {% for pay_terms in comp_payment_terms %}
+                                        {% for pay_terms in payment %}
                                         <option value="{{pay_terms.id}}">{{pay_terms.term_name}}</option>
                                         {% endfor %}
 
@@ -2012,7 +2032,7 @@
                                 </div>
 
                                 <div class="col-md-4 ">
-                                    <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#newpayment"
+                                    <a href="#" class="btn btn-outline-secondary py-2 my-1" data-target="#npayment"
                                         data-toggle="modal"
                                         style="color: white; background-color: rgb(210, 132, 30);">+</a>
                                 </div>
@@ -2036,7 +2056,6 @@
                                         {% for price_list in price_lists %}
 
                                         <option value="{{price_list.id}}">{{price_list.name}}</option>
-
 
                                         {% endfor %}
 
@@ -2111,7 +2130,7 @@
                                                 Attention</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark"
-                                                    name="battention" id="batten">
+                                                    name="battention" id="battens">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2130,7 +2149,7 @@
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <textarea class="form-control bg-light "
                                                     style="border: none;color: rgb(7, 7, 7);" cols="26" rows="4"
-                                                    name="baddress" id="badd1"></textarea>
+                                                    name="baddress" id="badd1s"></textarea>
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2138,7 +2157,7 @@
                                                 City</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark" name="bcity"
-                                                    id="bcty">
+                                                    id="bctys">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2146,7 +2165,7 @@
                                                 State</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark" name="bstate"
-                                                    id="bste">
+                                                    id="bstes">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2154,7 +2173,7 @@
                                                 Code </label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="number" class="form-control bg-light text-dark" name="bzip"
-                                                    id="bzp">
+                                                    id="bzps">
                                             </div>
                                         </div>
 
@@ -2162,9 +2181,9 @@
                                             <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white"> Phone
                                             </label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
-                                                <input id="bphone_num" type="tel" pattern="[0-9]{10}"
+                                                <input id="bphone_nums" type="tel" pattern="[0-9]{10}"
                                                     class="form-control bg-light text-dark" name="bphone">
-                                                <label for="" id="bphone_label"></label>
+                                                <label for="" id="bphone_labels"></label>
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2172,10 +2191,10 @@
                                             </label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="tel" class="form-control bg-light text-dark"
-                                                    pattern="[0-9]{7}" onmouseout="fax_number()"
-                                                    onclick="bphone_number()" name="bfax" id="bfx">
+                                                    pattern="[0-9]{7}" onmouseout="fax_numbers()"
+                                                    onclick="bphone_numbers()" name="bfax" id="bfxs">
 
-                                                <label for="" id="fax_label"></label>
+                                                <label for="" id="fax_labels"></label>
                                             </div>
                                         </div>
 
@@ -2186,8 +2205,8 @@
                                                 <label for="">SHIPPING ADDRESS</label>
                                             </div>
                                             <div class="col-sm-12 col-md-6 col-lg-6">
-                                                <input type="checkbox" id="myCheckT"
-                                                    onclick="myCopyAddressFunction()">&nbsp;
+                                                <input type="checkbox" id="myCheckTs"
+                                                    onclick="myCopyAddressFunctions()">&nbsp;
                                                 <label for="myCheck">Same as Billing Address:</label>
                                             </div>
                                         </div>
@@ -2196,14 +2215,14 @@
                                                 Attention</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark "
-                                                    style="color: white;" name="sattention" id="satten">
+                                                    style="color: white;" name="sattention" id="sattens">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
                                             <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white">
                                                 Country</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
-                                                <select name="s_country" id="sctry"
+                                                <select name="s_country" id="sctrys"
                                                     class="form-control bg-light text-dark">
                                                     <option value="India" selected>India</option>
                                                 </select>
@@ -2214,7 +2233,7 @@
                                                 Address</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <textarea class="form-control bg-light"
-                                                    style="border: none;color: rgb(10, 10, 10);" id="sadd1" cols="26"
+                                                    style="border: none;color: rgb(10, 10, 10);" id="sadd1s" cols="26"
                                                     rows="4" name="saddress"></textarea>
                                             </div>
                                         </div>
@@ -2223,7 +2242,7 @@
                                                 City</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark" name="scity"
-                                                    id="scty">
+                                                    id="sctys">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2231,7 +2250,7 @@
                                                 State</label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="text" class="form-control bg-light text-dark" name="sstate"
-                                                    id="sste">
+                                                    id="sstes">
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2239,7 +2258,7 @@
                                                 Code </label>
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="number" class="form-control bg-light text-dark" name="szip"
-                                                    id="szp">
+                                                    id="szps">
                                             </div>
                                         </div>
 
@@ -2250,8 +2269,8 @@
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="tel" class="form-control bg-light text-dark"
                                                     pattern="[0-9]{10}" style="color: white;" name="sphone"
-                                                    id="sphone_num">
-                                                <label for="" id="sphone_label"></label>
+                                                    id="sphone_nums">
+                                                <label for="" id="sphone_labels"></label>
                                             </div>
                                         </div>
                                         <div class="form-group row mt-4">
@@ -2260,8 +2279,8 @@
                                             <div class=" col-sm-12 col-md-6 col-lg-6">
                                                 <input type="tel" class="form-control bg-light text-dark"
                                                     pattern="[0-9]{7}" style="color: white;" name="sfax"
-                                                    onclick="sphone_number()" onmouseout="sfax_number()" id="sfx">
-                                                <label for="" id="sfax_label"></label>
+                                                    onclick="sphone_numbers()" onmouseout="sfax_numbers()" id="sfxs">
+                                                <label for="" id="sfax_labels"></label>
                                             </div>
                                         </div>
 
@@ -2281,7 +2300,7 @@
 
                                     <div class="table-responsive">
 
-                                        <table id="tbl" class="table text-white"
+                                        <table id="tbls" class="table text-white"
                                             style="background-color: rgba(250, 227, 198, 0.5);">
                                             <thead>
                                                 <tr>
@@ -2290,8 +2309,8 @@
                                                     <th>First Name</th>
                                                     <th>Last Name</th>
                                                     <th>Email Address</th>
-                                                    <th>Work Phone <br><span id="twph_label"></span></th>
-                                                    <th>Mobile <br><span id="tlabel"></span> </th>
+                                                    <th>Work Phone <br><span id="twph_labels"></span></th>
+                                                    <th>Mobile <br><span id="tlabels"></span> </th>
                                                     <th>Skype Name/No</th>
                                                     <th>Designation</th>
                                                     <th>Department</th>
@@ -2334,12 +2353,12 @@
                                                     <td>
                                                         <input type="tel" pattern="[0-9]{10}"
                                                             class="form-control border-1 bg-transparent text-white"
-                                                            id="tmobile" onclick="sample1()" name="mobile[]" />
+                                                            id="tmobile" onclick="samples1()" name="mobile[]" />
 
                                                     </td>
                                                     <td><input type="number"
                                                             class="form-control border-1 bg-transparent text-white"
-                                                            onclick="sample()" name="skype[]" /></td>
+                                                            onclick="samples()" name="skype[]" /></td>
                                                     <td><input type="text"
                                                             class="form-control border-1 bg-transparent text-white"
                                                             name="designation[]" /></td>
@@ -2354,7 +2373,7 @@
 
                                     </div>
 
-                                    <div class="button add_another mt-3 ">
+                                    <div class="button add_anothers mt-3 ">
                                         <i class="fa fa-user-plus" aria-hidden="true"></i>
                                         <span class="text-small" style="margin-left: 0.30rem;">
                                             Add Contact Person
@@ -2414,6 +2433,386 @@
         </div>
     </div>
 </div>
+
+<!-- -------------------------Customer Payment terms-------------------------- -->
+
+<div class="modal fade" id="npayment">
+    <div class="modal-dialog modal-md">
+    <div class="modal-content" style="background: rgb(32, 35, 37);border-radius: 20px;">
+        <div class="modal-header " style="background: rgb(32, 35, 37);">
+            <h3 class="m-3 text-uppercase" style="color: white;">Add Payment Term</h3>
+            <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body" style="background: rgb(32, 35, 37);">
+        <div class="card p-3 m-3" style="background-color: #141414a2;">
+            <form action="" method="post" class="needs-validation" novalidate autocomplete="off" id="modalPayment_terms">
+            
+
+
+            <div class="row mt-2">
+
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
+                    <label for="termname" style="color: white">Term Name *</label>
+
+                <input type="text " class="form-control text-dark bg-light mt-2" id="tnames" name="term_name" autocapitalize="characters" required> 
+                <span id="message-ids" class="mt-1 text-danger" style="font-size: 10px;"></span> 
+                <span id="success-message-ids" class=" mt-1 text-success" style="font-size: 10px;"></span>    
+                </div>
+
+                <div class="col-lg-12 col-md-12 col-sm-12 mt-2">
+                    <label for="termdays" style="color: white">Number of Days *</label>
+
+                <input type="number" class="form-control text-dark bg-light mt-2" id="tdayss" name="term_days" autocapitalize="characters" required>
+                </div>
+                <div class="col-md-2 mt-2"></div>
+
+            </div>
+            
+            <div class="row mt-5">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                <div class="d-flex">
+                    <button class="btn save_btn rounded-pill text-grey w-50 my-1 mx-1 btn-outline-warning "
+                    type="submit" data-dismiss="modal" id="CtermSave">Save
+                    </button> 
+                    
+
+                    <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-1 mx-1 btn-outline-warning" 
+                    data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">Cancel</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+    </div>
+    </div>  
+</div> 
+
+<!-------------------Customer Payments  Section End -------------->
+
+<!-- ----------------------------Item modal------------------------------ -->
+<div class="modal fade" id="create_item" style="overflow: auto;">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+      <div class="modal-content modal-xl  p-5" style="background-color: #000000;height: 700px; overflow-y: scroll;overflow: auto;">
+        <div class="modal-header">
+          <h3 class="mb-3  text-white  " style="font-size: 2rem;">New item</h3>
+          <button type="button" class="close text-light" data-dismiss="modal" aria-label=""
+            style="font-size: 20px;;background-color: #000000;border:none;">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" method="post" id="modalItem">
+          {% csrf_token %}
+          <fieldset class="form-group">
+            <div class="row">
+              <label class="col-form-label col-sm-2 pt-3">Type <i class="fa fa-question-circle"></i></label>
+              <div class="col-sm-10 form-inline">
+                <div class="form-check ">
+                  <input required class="form-check-input " type="radio" name="type" id="gridRadios1" value="Goods" style="margin-left:5px;">
+                  <label class="form-check-label text-white" for="gridRadios1">Goods</label>
+                </div>
+                <div class="form-check ml-5">
+                  <input required class="form-check-input " type="radio" name="type" id="gridRadios2" value="Services" style="margin-left:50px;">
+                  <label class="form-check-label text-white" for="gridRadios2">Services</label>
+                </div>
+                      
+              </div>
+            </div>
+          </fieldset>
+          <div class="form-group row">
+            <label  class="col-sm-2 col-form-label ">Name *</label>
+            <div class="col-sm-10 col-md-7 col-9" style="margin-left: -2.2rem;">
+              <input required type="text" class="form-control text-black" name="name" id="nameInput">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Unit <i class="fa fa-question-circle"></i></label>
+            <div class="col-sm-10 col-md-7 col-9" style="margin-left: -2.2rem;">
+                <div class="d-flex align-items-center">
+                    <select name="unit" class="form-control text-black" id="unit" style="width: 100%;">
+                        {% for u in unit %}
+                        <option value="{{u.id}}">{{u.unit}}</option>
+                        {% endfor %}
+                    </select>
+                    <button style="width: 2.5rem; background-color: chocolate; color: black; border-radius: 3px; margin-left: 10px;" class="open-button" onclick="openForm()">+</button>
+                </div>
+            </div>
+        </div>
+        
+
+          <div class="form-group row">
+            <label  class="col-sm-2 col-form-label">HSN Code</label> 
+            <div class="col-sm-10 col-md-7 col-9"  style="margin-left: -2.2rem;" >
+              <input required type="number" class="form-control text-black" name="hsn" id="myInputField" oninput="validateInput()">
+              <div id="validationResult"></div>
+            </div>
+          </div>
+          <script>
+            function validateSixDigits(field) {
+              // Define the regular expression pattern for exactly six digits
+              var pattern = /^\d{6}$/;
+            
+              // Check if the field matches the pattern
+              return pattern.test(field);
+            }
+            
+            function validateInput() {
+              var inputField = document.getElementById("myInputField");
+              var inputValue = inputField.value;
+            
+              var validationResultDiv = document.getElementById("validationResult");
+            
+              if (validateSixDigits(inputValue)) {
+                validationResultDiv.textContent = "Valid: The field contains exactly six digits.";
+              } else {
+                validationResultDiv.textContent = "Invalid: The field does not contain exactly six digits.";
+              }
+            }
+          
+          </script>
+          <div class="form-inline text-white" >
+            <label class="text-danger mb-4 mr-4" for="">Tax Preference  :</label>
+            <p class="text-white  ">
+            <input type="radio"  name="radio" value="taxable" onclick="showAllSelect()" style="margin-left:95px;">  Taxable</p>
+            <p><input type="radio" name="radio" value="no-taxable" onclick="hideAllSelect()" style="margin-left:62px;"> None-Taxable </p><br><br>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3">
+          
+              <div id="select1_div" style="display: none;">
+                <label for="select1">Intra-State TAX</label>
+                <select name="intra" class="form-control text-black" id="select1">
+                  <option value="GST0[0%]">GST0[0%]</option>
+                  <option value="GST3[3%]">GST3[3%]</option>
+                  <option value="GST5[5%]">GST5[5%]</option>
+                  <option value="GST12[12%]">GST12[12%]</option>
+                  <option value="GST18[18%]">GST18[18%]</option>
+                  <option value="GST28[28%]">GST28[28%]</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div id="select2_div" style="display: none;">
+                <label for="select2">Inter-State TAX</label>
+                <select name="inter" class="form-control text-black" id="select2">
+                  <option value="IGST0[0%]">IGST0[0%]</option>
+                  <option value="IGST5[5%]">IGST3[3%]</option>
+                  <option value="IGST5[5%]">IGST5[5%]</option>
+                  <option value="IGST12[12%]">IGST12[12%]</option>
+                  <option value="IGST18[18%]">IGST18[18%]]</option>
+                  <option value="IGST28[28%]">IGST28[28%]</option>
+                </select>
+              </div>
+            </div>
+          </div>
+    
+
+
+        <script>
+        function showAllSelect() {
+        var select1_div = document.getElementById("select1_div");
+        var select2_div = document.getElementById("select2_div");
+        select1_div.style.display = "block";
+        select2_div.style.display = "block";
+        }
+
+        function hideAllSelect() {
+        var select1_div = document.getElementById("select1_div");
+        var select2_div = document.getElementById("select2_div");
+        select1_div.style.display = "none";
+        select2_div.style.display = "none";
+        }
+        </script>
+        <div class="row">
+          <div class="col-md-6">
+            <input  type="checkbox" name="selling" checked> <label >selling  information</label><br><br>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label">Selling price *</label>
+              <div class="col-sm-12 col-md-7 col-9 ml-5">
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text text-white">INR</div>
+                  </div>
+                  <input required type="text" name="sel_price" class="form-control text-black">
+                </div>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label  class="col-sm-2 col-form-label">Account *</label>
+              <div class="col-sm-10 col-md-7 col-9 ml-5">
+                <select name="sel_acc" class="form-control text-dark">
+                  
+                       
+                  
+                  {% for account_type in account_type %}
+                    <option value="" disabled class="btn btn-dark  highlight-account-type"><b>{{ account_type }}</b></option>
+                    {% for account in account %}
+                    {% if account.Account_type == account_type %}
+                    <option value="{{account.id}}">{{ account.Account_name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                    {% endfor %}
+
+                </select>                              
+              </div>
+            </div>
+            <div class="form-group row">
+              <label  class="col-sm-2 col-form-label">Description </label>
+              <div class="col-sm-10 col-md-7 col-9 ml-5">
+                <input required  type="text" name="sel_desc" class="form-control text-black" >
+              </div>
+            </div>
+                                  
+          </div>
+          <div class="col-md-6">
+            <input type="checkbox" name="purchase" checked> <label for="">Purchase information</label><br><br>
+            <div class="form-group row">
+              <label  class="col-sm-2 col-form-label">Cost Price *</label>
+              <div class="col-sm-10 col-md-7 col-9">
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text text-white">INR</div>
+                  </div>
+                  <input required type="text" class="form-control text-black" name="cost_price" >
+                </div>
+              </div>
+            </div>
+            <div class="form-group row in">
+              <label class="col-sm-2 col-form-label">Account *</label>
+              <div class="col-sm-10 col-md-7 col-5">
+                  <div class="d-flex align-items-center">
+                      <select name="cost_acc" class="form-control text-black" id="myaccount" >
+                          {% for account_type in account_types %}
+                          <option value="" disabled class="btn btn-dark text-light highlight-account-type"><b>{{ account_type }}</b></option>
+                          {% for account in accounts %}
+                          {% if account.Account_type == account_type %}
+                          <option value="{{account.id}}">{{ account.Account_name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                          {% endfor %}
+                      </select>
+                      <button id="showFormButton" style="width: 40px; background-color: chocolate; color: black; border-radius: 3px; margin-left: 10px;" class="openbutton" onclick="showForm()">+</button>
+                  </div>
+              </div>
+          </div>
+          
+          
+
+
+            <div class="form-group row">
+              <label  class="col-sm-2 col-form-label">Description </label>
+              <div class="col-sm-10 col-md-7 col-9">
+                <input  type="text" name="cost_desc" class="form-control text-black"  >
+              </div>
+            </div>
+          </div>
+          <div class="form-group row mt-1">
+            <label  class="col-sm-2 col-form-label">Minimum Stock to maintain </label>
+            <div class="col-sm-7 col-md-3 col-9">
+              <input  type="text" name="minimum_stock" class="form-control text-black" style="margin-left: -2.4rem;" >
+            </div>
+          </div>
+          <fieldset class="form-group">
+            <div class="row">
+              <label class="col-form-label col-sm-2 pt-3">Activation tag<i class="fa fa-question-circle"></i></label>
+              <div class="col-sm-10 form-inline">
+                <div class="form-check ">
+                  <input required class="form-check-input" type="radio" name="status" id="gridRadios1" value="Active"  style="margin-left:5px;" >
+                  <label class="form-check-label text-white" for="gridRadios1">Activate</label>
+                </div>
+                <div class="form-check ml-5">
+                  <input required class="form-check-input" type="radio" name="status" id="gridRadios2" value="Inactive" style="margin-left:50px;">
+                  <label class="form-check-label text-white" for="gridRadios2">Non-Activate</label>
+                </div>
+                  
+              </div>
+            </div>
+          </fieldset>
+            <br><br>
+            <div class="row" >
+              <div class="col-md-10">
+                {% comment %} <label><input type="checkbox" value="trackstate" name="trackstate" onclick="toggleForm()" style="display: none;">
+               Track Inventory for this item</label> {% endcomment %}
+                {% comment %} <input type="hidden" name="trackState" id="trackState" value="" unchecked> {% endcomment %}
+                <label>
+                  <input type="checkbox" name="trackstate" value="trackstate" class=" "  onclick="toggleFormFields()">
+                  Track Inventory for this item
+                </label>
+                <div id="formFields" style="display: none;"> 
+                  <div class="form-group row" >
+                    <label class="col-sm-2 col-form-label">Inventory Account *</label>
+                    <div class="col-sm-10 col-md-7 col-9" style="margin-left: -1rem;">
+                      <select class="form-select form-select-sm mt-3 text-black" name="invacc">
+                        <option>Choose..</option>
+                        <option value="inventory assets">Inventory Asset</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group row ">
+                    <label class="col-sm-2 col-form-label">Opening Stock</label>
+                    <div class=" col-md-5">
+                      <input  type="number" class="form-control text-black"  name="openstock" value="0">
+                    </div>
+                    <div class="col-md-5  ">
+                      <div class="row align-items-center">
+                        <label class="col-sm-6 col-form-label">Opening Stock Rate per Unit</label>
+                        <div class="col-sm-6">
+                          <input type="number" class="form-control text-black" name="inventoryaccntperunit"  value="0">
+                        </div>
+
+                      </div>
+                    </div>
+                    <fieldset class="form-group">
+                      <div class="row">
+                        <label class="col-form-label col-sm-2 pt-2">Activation tag<i class="fa fa-question-circle"></i></label>
+                        <div class="col-sm-10 form-inline">
+                          <div class="form-check ">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios1" value="Active"  style="margin-left:5px;" >
+                            <label class="form-check-label" for="gridRadios1">Activate</label>
+                          </div>
+                          <div class="form-check ml-5">
+                            <input  class="form-check-input" type="radio" name="satus" id="gridRadios2" value="Inactive"  style="margin-left:50px;">
+                            <label class="form-check-label" for="gridRadios2">Non-Activate</label>
+                          </div>
+                                      
+                        </div>
+                      </div>
+                    </fieldset>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <script>
+              function toggleFormFields() {
+                var formFields = document.getElementById("formFields");
+                var checkbox = document.querySelector("input[name=trackstate]");
+          
+                if (checkbox.checked) {
+                  formFields.style.display = "block";
+                } else {
+                  formFields.style.display = "none";
+                }
+              }
+            </script>
+            <br><br> <br>
+        <div class="form-inline " style="margin-bottom: 200px;">
+          <button type="submit"  class="mr-3 btn" style="background-color: chocolate;" data-dismiss="modal" onclick="create_item()" value="Save">Save</button>
+          <button type="button" class="mr-3 btn"  data-dismiss="modal" value="Cancel" style="margin-left:10px;background-color: chocolate;">Cancel</button>
+        </div>
+      </form>
+      </div>
+      </div>
+    </div>
+
+
+<!-- ----------------------------end item modal----------------------------- -->
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
@@ -2495,7 +2894,7 @@
 
         $('#gst_Input').on('input', function () {
             var gstNumber = $(this).val();
-            var regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            var regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z][0-9A-Z]{1}[0-9A-Z]$/;
             if (regex.test(gstNumber)) {
                 $('#gst_Message').text('GST number is valid.').css('color', 'green');
                 // GST number is valid, call AJAX to check if it exists
@@ -2528,24 +2927,172 @@
     });
 </script>
 <script>
-    function gstPan_functions(){
-                var x=document.getElementById('GSTTN').value
-                if(x=="Unregistered Business-not Registered under GST")
-                {
-                    document.getElementById("pans").style.display="block";
-                    document.getElementById("gstn").style.display="none";
-        
-                    
-                }
-                else if((x=="Registered Business-Regular Business that is registered under GST") || (x=="Registered Business-Composition Business that is registered under the Composition scheme in GST") || (x=="Overseas- Persons with who you do import or exports of supplies outside india") || (x=="Special Economic Zone"))
-                {
-                    document.getElementById("gstn").style.display="block";
-                    document.getElementById("pans").style.display="block";
-        
-        
-                }
-            
-            }
+    function gstPan_functions() {
+        var x = document.getElementById('GSTTN').value
+        if (x == "Unregistered Business-not Registered under GST") {
+            document.getElementById("pans").style.display = "block";
+            document.getElementById("gstn").style.display = "none";
+
+
+        }
+        else if ((x == "Registered Business-Regular Business that is registered under GST") || (x == "Registered Business-Composition Business that is registered under the Composition scheme in GST") || (x == "Overseas- Persons with who you do import or exports of supplies outside india") || (x == "Special Economic Zone")) {
+            document.getElementById("gstn").style.display = "block";
+            document.getElementById("pans").style.display = "block";
+
+
+        }
+
+    }
+
+    $(document).ready(function () {
+        $(".toggle11").click(function (e) {
+            e.preventDefault();
+            $("fieldset11").toggle();
+        })
+    })
+    $(document).ready(function () {
+        $(".toggle21").click(function (e) {
+            e.preventDefault();
+
+            $("fieldset2").toggle();
+            $("fieldset5").hide();
+            $("fieldset6").hide();
+            $("fieldset7").hide();
+
+
+
+        })
+    })
+
+    $(document).ready(function () {
+        $(".toggle31").click(function (e) {
+          e.preventDefault();
+          $("fieldset5").toggle();
+          $("fieldset2").hide();
+          $("fieldset6").hide();
+          $("fieldset7").hide();
+
+        })
+      })
+      $(document).ready(function () {
+        $(".toggle41").click(function (e) {
+          e.preventDefault();
+          $("fieldset6").toggle();
+          $("fieldset2").hide();
+          $("fieldset5").hide();
+          $("fieldset7").hide();
+                
+        })
+      })
+      $(document).ready(function () {
+        $(".toggle71").click(function (e) {
+          e.preventDefault();
+          $("fieldset7").toggle();
+          $("fieldset2").hide();
+          $("fieldset6").hide();
+          $("fieldset5").hide();
+         
+
+         
+        })
+      })
+
+      $('document').ready(function () {
+        $('.add_anothers').click(function () {
+          $("#tbls").append(`<tr>
+            <td>
+                <select name="salutation[]" id="PLACE" class="form-control bg-transparent border-1 text-white">
+                    <option value="Mr" class="text-dark" selected>Mr.</option>
+                    <option class="text-dark" value=""Mrs">Mrs.</option>
+                    <option class="text-dark" value="Ms">Ms.</option>
+                    <option class="text-dark" value="Miss">Miss.</option>
+                    <option class="text-dark" value="Dr">Dr.</option>
+                </select>  
+            </td>
+            <td>
+                <input type="text" name="first_name[]" class="form-control border-1 bg-transparent text-white"  value="" />
+            </td>
+            <td>
+                <input type="text" name="last_name[]" class="form-control border-1 bg-transparent text-white"   value="" />
+            </td>
+            <td>
+                <input type="email" name="email[]" class="form-control border-1 bg-transparent text-white" value="" />
+            </td>
+            <td>
+                <input type="tel" pattern="[0-9]{7}" id="twphone" name="wphone[]" class="form-control border-1 bg-transparent text-white"  value="" />
+            </td>
+            <td>
+                <input type="tel" pattern="[0-9]{10}" id="tmobile" onclick="samples1()" name="mobile[]" class="form-control border-1 bg-transparent text-white"  value="" />
+            </td>
+            <td>
+                <input type="number" onclick="samples()" name="skype[]" class="form-control border-1 bg-transparent text-white"  value="" />
+            </td>
+            <td>
+                <input type="text" name="designation[]" class="form-control border-1 bg-transparent text-white" value="" />
+            </td>
+            <td>
+                <input type="text" name="department[]" class="form-control border-1 bg-transparent text-white" value="" />
+            </td>
+            <td><button type="button" class="btn btn-danger" onclick="deleteContact(this)">Delete</button></td>
+        </tr>`);
+        });
+      })
+
+      function fieldset5_function()
+      {
+        document.getElementById("address").style.display="block";
+      }
+
+    
+
+    function myCopyAddressFunction() {
+        var checkBox = document.getElementById("myCheckT");
+        var textatn = document.getElementById("batten");
+        var txtcry = document.getElementById("bctry");
+        var txtadrs11 = document.getElementById("badd1");
+        var txtcty = document.getElementById("bcty");
+        var txtstat = document.getElementById("bste");
+        var txtzip = document.getElementById("bzp");
+        var txtphone = document.getElementById("bphone_num");
+        var txtfx = document.getElementById("bfx");
+  
+        var textatn1 = document.getElementById("satten");
+        var txtcry1 = document.getElementById("sctry");
+        var txtadrs21 = document.getElementById("sadd1");
+        var txtcty1 = document.getElementById("scty");
+        var txtstat1 = document.getElementById("sste");
+        var txtzip1 = document.getElementById("szp");
+        var txtphone1 = document.getElementById("sphone_num");
+        var txtfx1 = document.getElementById("sfx");
+        if (checkBox.checked == true) {
+          textatn1.value = textatn.value;
+          txtadrs21.value = txtadrs11.value;
+          txtcty1.value = txtcty.value;
+          txtstat1.value = txtstat.value;
+          txtzip1.value = txtzip.value; 
+          txtphone1.value = txtphone.value;
+          txtfx1.value = txtfx.value;
+          
+
+
+
+          
+  
+        } else {
+          txtadrs21.value = "";
+          txtcty1.value = "";
+          txtstat1.value = "";
+          txtzip1.value = "";
+          txtphone1.value = "";
+          txtfx1.value = "";
+          txtcry1.value = "";
+          textatn1.value = "";
+
+  
+        }
+      }
+
+
 </script>
 
 <script>
@@ -2578,8 +3125,8 @@
         row.parentNode.removeChild(row);
     }
 
-    document.querySelector('.add_another').addEventListener('click', function () {
-        var table = document.getElementById('tbl').getElementsByTagName('tbody')[1];
+    document.querySelector('.add_anothers').addEventListener('click', function () {
+        var table = document.getElementById('tbls').getElementsByTagName('tbody')[1];
         var newRow = table.insertRow(table.rows.length);
 
         for (var i = 1; i < 9; i++) {
@@ -2871,31 +3418,31 @@
         });
     })
 
-    function fieldset5_function() {
-        document.getElementById("address").style.display = "block";
+    function fieldset5_functions() {
+        document.getElementById("adress").style.display = "block";
     }
 
 
 
-    function myCopyAddressFunction() {
-        var checkBox = document.getElementById("myCheckT");
-        var textatn = document.getElementById("batten");
-        var txtcry = document.getElementById("bctry");
-        var txtadrs11 = document.getElementById("badd1");
-        var txtcty = document.getElementById("bcty");
-        var txtstat = document.getElementById("bste");
-        var txtzip = document.getElementById("bzp");
-        var txtphone = document.getElementById("bphone_num");
-        var txtfx = document.getElementById("bfx");
+    function myCopyAddressFunctions() {
+        var checkBox = document.getElementById("myCheckTs");
+        var textatn = document.getElementById("battens");
+        var txtcry = document.getElementById("bctrys");
+        var txtadrs11 = document.getElementById("badd1s");
+        var txtcty = document.getElementById("bctys");
+        var txtstat = document.getElementById("bstes");
+        var txtzip = document.getElementById("bzps");
+        var txtphone = document.getElementById("bphone_nums");
+        var txtfx = document.getElementById("bfxs");
 
-        var textatn1 = document.getElementById("satten");
-        var txtcry1 = document.getElementById("sctry");
-        var txtadrs21 = document.getElementById("sadd1");
-        var txtcty1 = document.getElementById("scty");
-        var txtstat1 = document.getElementById("sste");
-        var txtzip1 = document.getElementById("szp");
-        var txtphone1 = document.getElementById("sphone_num");
-        var txtfx1 = document.getElementById("sfx");
+        var textatn1 = document.getElementById("sattens");
+        var txtcry1 = document.getElementById("sctrys");
+        var txtadrs21 = document.getElementById("sadd1s");
+        var txtcty1 = document.getElementById("sctys");
+        var txtstat1 = document.getElementById("sstes");
+        var txtzip1 = document.getElementById("szps");
+        var txtphone1 = document.getElementById("sphone_nums");
+        var txtfx1 = document.getElementById("sfxs");
         if (checkBox.checked == true) {
             textatn1.value = textatn.value;
             txtadrs21.value = txtadrs11.value;
@@ -2904,11 +3451,6 @@
             txtzip1.value = txtzip.value;
             txtphone1.value = txtphone.value;
             txtfx1.value = txtfx.value;
-
-
-
-
-
 
         } else {
             txtadrs21.value = "";
@@ -2924,12 +3466,141 @@
         }
     }
 
-
     function open_table() {
         document.getElementById("hid").style.display = "block";
 
     }
 
+
+    function bphone_numbers()
+      {
+        var a1=document.getElementById("bphone_nums").value;
+        var b1=document.getElementById("bphone_labels");
+        var expr=/^[0-9]{10}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Invalid Phone Number.";
+        }
+        else{
+            b1.style.color="green";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Valid Phone Number.";
+
+        }
+      }
+
+      function sphone_numbers()
+      {
+        var a1=document.getElementById("sphone_nums").value;
+        var b1=document.getElementById("sphone_labels");
+        var expr=/^[0-9]{10}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Invalid Fax Number.";
+        }
+        else{
+            b1.style.color="green";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Valid Fax Number.";
+
+        }
+      }
+
+
+      function fax_numbers()
+      {
+        var a1=document.getElementById("bfxs").value;
+        var b1=document.getElementById("fax_labels");
+        var expr=/^[0-9]{7}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Invalid Fax Number.";
+        }
+        else{
+            b1.style.color="green";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Valid Fax Number.";
+
+        }
+      }
+
+      function sfax_numbers()
+      {
+        var a1=document.getElementById("sfxs").value;
+        var b1=document.getElementById("sfax_labels");
+        var expr=/^[0-9]{7}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Invalid Phone Number.";
+        }
+        else{
+            b1.style.color="green";
+            b1.style.fontSize="0.750rem";
+            b1.innerHTML = "Valid Phone Number.";
+
+        }
+      }
+
+      function samples()
+      {
+
+        var tbldata = document.getElementById("tbls");
+        var total_rows = tbldata.rows.length;
+        x=document.getElementById("tbls");
+        var a1=x.rows[total_rows-1].cells[5].getElementsByTagName('input')[0].value;
+
+        var b1=document.getElementById("tlabels");
+
+        b1.innerHTML = "";
+
+        var expr=/^[0-9]{10}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.innerHTML = "Invalid";
+            b1.style.fontSize="0.750rem";
+        }
+        else{
+            b1.style.color="green";
+            b1.innerHTML = "Valid";
+            b1.style.fontSize="0.750rem";
+
+        }
+
+       
+
+      }
+
+      function samples1()
+      {
+
+        var tbldata = document.getElementById("tbls");
+        var total_rows = tbldata.rows.length;
+        x=document.getElementById("tbls");
+        var a1=x.rows[total_rows-1].cells[4].getElementsByTagName('input')[0].value;
+
+        var b1=document.getElementById("twph_labels");
+
+        b1.innerHTML = "";
+
+        var expr=/^[0-9]{7}$/;
+        if (!expr.test(a1)) {
+            b1.style.color="red";
+            b1.innerHTML = "Invalid";
+            b1.style.fontSize="0.750rem";
+        }
+        else{
+            b1.style.color="green";
+            b1.innerHTML = "valid";
+            b1.style.fontSize="0.750rem";
+
+        }
+
+
+      }
 
 
 
@@ -3060,6 +3731,196 @@
 
 
 </script>
+
+<script>
+    $(document).on("click","#CtermSave",function(){
+   
+
+  $.ajax({
+    type : 'POST',
+    url:"{% url 'customer_payment_terms_add' %}",
+
+    data:{
+        name : $("#tnames").val(),
+        days : $("#tdayss").val(),
+        
+        csrfmiddlewaretoken: '{{ csrf_token }}'
+        
+      },
+    
+      success: function(response) {
+        $("#tnames").val('')
+        $("#tdayss").val('')
+        var paytearmSelect = $('#paytearm-selects'); 
+          paytearmSelect.empty();  // Clear existing options
+          
+
+          // Add "Select" option
+          paytearmSelect.append('<option value="Due on Receipt" selected>Due on Receipt</option>');
+
+          // Add new options based on the Ajax response
+          $.each(response.payment_list, function(index, pay_terms) {
+            paytearmSelect.append('<option value="' + pay_terms.id + '">' + pay_terms.name + '</option>');
+          });
+        // reloadPayment();
+      },
+  });        
+});
+
+</script>
+
+<script>
+    // Get the input element
+    const inputElements = document.getElementById("tnames");
+
+    // Add event listener for input event
+    inputElements.addEventListener("input", function() {
+        // Convert the input value to uppercase
+        this.value = this.value.toUpperCase();
+    });
+</script>
+<script>
+
+    $(document).ready(function() {
+        $('#tnames').on('input', function() {
+            
+            var termName = $(this).val();
+           
+            $.ajax({
+                type: 'GET',
+                url:'{% url "check_customer_term_exist" %}',
+                data: {
+                    term_name: termName
+                },
+                success: function(response) {
+                    if (response.exists) {
+                        $('#message-ids').text('Term already exists !');
+                        $('#success-message-ids').text('');
+                      
+                        $('#tnames').val('');
+                    } else {
+                        $('#success-message-ids').text('Term name available !');
+                        $('#message-ids').text('');
+                    }
+                    
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+
+
+    $('#customer-email').on('input', function() {
+        
+        var vendorEmail = $(this).val();
+        console.log(vendorEmail)
+        $.ajax({
+            type: 'GET',
+            url:'{% url "check_customer_email_exist" %}',
+            data: {
+                vendor_email: vendorEmail
+            },
+            success: function(response) {
+                if (response.exists) {
+                    $('#email-message-ids').text('Email id already exists !');
+                    $('#customer-email').val('');
+                }
+                else{
+                    $('#email-message-ids').text('');
+                }
+                
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+
+
+    $('#workphones').on('input', function() {
+        
+        var wPhone = $(this).val();
+        
+        $.ajax({
+            type: 'GET',
+            url:'{% url "check_customer_work_phone_exist" %}',
+            data: {
+                w_Phone: wPhone
+            },
+            success: function(response) {
+                if (response.exists) {
+                    $('#workphone_labels').text('Work phone number already exists !');
+                    $('#workphones').val('');
+                }
+                else{
+                    $('#workphone_labels').text('');
+                }
+                
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+
+    $('#mphones').on('input', function() {
+        
+        var mPhone = $(this).val();
+        
+        $.ajax({
+            type: 'GET',
+            url:'{% url "check_customer_phonenumber_exist" %}',
+            data: {
+                m_Phone: mPhone
+            },
+            success: function(response) {
+                if (response.exists) {
+                    $('#mphone_labels').text('Phone number already exists !');
+                    $('#mphones').val('');
+                }
+                else{
+                    $('#mphone_labels').text('');
+                }
+                
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    });
+    
+</script>   
+
+<script>
+    // Work Phone Number Validation 
+    $(document).ready(function () {
+        $('#workphones').on('input', function () {
+            var inputVal = $(this).val();
+            var expr = /^[0-9]{7}$/;
+            if (expr.test(inputVal)) {
+                $('#work-phone-messages').text('Valid work phone number').css('color', 'green');
+            } else {
+                $('#work-phone-messages').text('Invalid work phone number').css('color', 'red');
+            }
+        });
+    });
+
+    // Phone Number Validation
+    $(document).ready(function () {
+        $('#mphones').on('input', function () {
+            var inputVal = $(this).val();
+            var expr=/^[0-9]{10}$/;
+            if (expr.test(inputVal)) {
+                $('#phone-messages').text('Valid  phone number').css('color', 'green');
+            } else {
+                $('#phone-messages').text('Invalid  phone number').css('color', 'red');
+            }
+        });
+    });
+</script>
+
 
 <script type="text/javascript">
     function vendor_display() {
@@ -3263,4 +4124,409 @@
         });
     });
 </script>
+
+<!-- ---------------------------------table---------------------- -->
+<script>
+
+    $(document).ready(function(){
+
+
+$('#add').click(function(){
+  var table = document.getElementById("items-table-body");
+  var roinc = table.rows.length;
+
+  $('#items-table-body').append(
+    
+    `<tr id='addr${roinc}' class = 'addr '>
+      <td  style="color: white;"><span id="slnum${roinc}">${roinc+1}</span></td>
+      
+      <td style="width: 20%;">
+        <div class="d-flex">
+          
+          <select name='item[]' id='item${roinc}' class="form-control item text-black border-0 listAdditem  select2"  style="color: black; background-color: white;" onchange="showRate(this.id,this.value,${roinc})">
+                              <option value=" " selected disabled class='text-dark'>Select</option>
+                              
+                              {% for i in item %}
+                                 
+                                      <option value="{{ i.id }}" >{{ i.Name  }} </option>
+                               
+                              {% endfor %}
+          </select>
+        </div>  
+      </td>
+
+      <td style="width: 11%;">
+        <input type="text" name='HSN[]' id="HSN${roinc}" value="0" class="bg-transparent border-0 text-white text-right HSN text-dark bg-light"   style="width: 52px; " />
+      </td>
+
+     
+      <td style="width: 10%;">
+        <input type="number" name='qty[]' value="0" placeholder='Qty' id="qty${roinc}"  class="bg-transparent border-0 text-white text-right qty text-dark bg-light" step=0 min=0 style="width: 50px;" />
+        <br>
+        <span class="text-warning">Available Stock : <span id="stock_data${roinc}" class="text-warning stock_data"></span></span>
+        <input  type="text" hidden class="stock_data_hidden" name ='stock[]' id="stock_data_hidden${roinc}" value="0"/>
+      </td>
+      <td style="width: 10%;">
+        <input type="text" name='rate[]' id="rate${roinc}" value="0.00" style="width: 70px;" class="bg-transparent border-0 text-white text-right rate text-dark bg-light" />
+      </td>
+      <td style="width: 15%;">
+        <input type="hidden" id="tax_total0" class="form-control mb-2 d-none" >
+        <input type="text" placeholder="Select TAX" class="form-control selecttax text-dark bg-light" id="selecttax${roinc}" style = "width:100px;" >
+        <select name="tax1[]" id="intra_tax${roinc}" class="form-control tax1 d-none mb-2 text-dark bg-light" >
+            <option id="ta1" value=0 text=" ">Choose GST</option>
+            <option value=28 text="{{ cmp1.state }}">28.0% GST</option>
+            <option value=18 text="{{ cmp1.state }}">18.0% GST</option>
+            <option value=12 text="{{ cmp1.state }}">12.0% GST</option>
+            <option value=5 text="{{ cmp1.state }}">05.0% GST</option>
+            <option value=3 text="{{ cmp1.state }}">03.0% GST</option>
+            <option value=0 text="{{ cmp1.state }}">0.0% GST</option>
+        </select>
+
+        <select name="tax2[]" id="inter_tax${roinc}" class="form-control tax2 d-none mb-2 text-dark bg-light">
+          <option id="ta5" value=0 text=" " >Choose IGST</option>
+          <option value=28 text="{{ cmp1.state }}">28.0% IGST</option>
+          <option value=18 text="{{ cmp1.state }}">18.0% IGST</option>
+          <option value=12 text="{{ cmp1.state }}">12.0% IGST</option>
+          <option value=5 text="{{ cmp1.state }}">05.0% IGST</option>
+          <option value=3 text="{{ cmp1.state }}">03.0% IGST</option>
+          <option value=0 text="{{ cmp1.state }}">0.0% IGST</option>
+        </select>
+      </td>
+        
+      <td style="width: 11%;">
+        <input type="text" name='discount[]' id="disc${roinc}" style="width: 60px;" value='0.00' class="bg-transparent border-0 text-white text-right disc text-dark bg-light" step="0.00" min="0"/>
+      </td>
+      <td style="width: 11%;">
+        <input type="text" name='amount[]' id="amount${roinc}"  style="width: 60px;" value='0.00' class="bg-transparent border-0 text-white text-right amount text-dark bg-light" step="0.00" min="0"  />
+      </td>
+        
+      <td>
+        <button type="button" id="${roinc}" class="btn btn-outline-primary clone_row text-center mb-1 p-1 " data-toggle= "tooltip" data-placement="bottom" tooltip="Clone"
+            style = "width:25px; height: 25px; border-radius: 90% " >
+          <i class="fa-solid fa-clone"></i>
+        </button> <br>
+        <button type="button" id="${roinc}" class="btn btn-outline-danger remove_row text-center p-1" data-toggle= "tooltip" data-placement="bottom" tooltip="Remove"
+            style = "width:25px; height: 25px; border-radius: 90% " >
+          <i class="fa fa-window-close"></i>
+        </button>
+      </td>
+    </tr>`
+
+ 
+    );
+    $(`#item${roinc}`).select2();
+  reloadItem();
+});
+});
+
+$(document).on('click','.clone_row',function(){ debugger
+reloadItem();
+var table = document.getElementById("items-table-body");
+var roinc = table.rows.length;
+
+var row = $(this).closest('#items-table-body tr'); 
+var newRow = row.clone();  
+
+var inputs = row.find('input');
+var item = row.find('.item');
+var accnt = row.find('.acnt');
+var qnty = row.find('.qty');
+var rt = row.find('.rate');
+var amnt  = row.find('.amount');
+var disc = row.find(".disc");
+var intra = row.find(".tax1");
+var inter = row.find(".tax2");
+var clone = row.find(".clone_row");
+var rm = row.find(".remove_row");
+var hsn = row.find(".HSN");
+var slnum = row.find(".slnum");
+var newItem = "";
+var stock_data_hidden = row.find(".stock_data_hidden");
+var stock_data = row.find(".stock_data");
+
+newRow.each(function(index) {
+    var idPrefix = 'addr';
+    var newId = idPrefix + roinc ;
+    newRow.attr('id' , newId);
+    
+});
+clone.each(function(index) {
+    var value1 = $(this).val();
+    var newId = roinc ;
+    newRow.find('.clone_row').eq(index).attr('id' , newId);
+    
+});
+rm.each(function(index) {
+    var value1 = $(this).val();
+    var newId = roinc ;
+    newRow.find('.remove_row').eq(index).attr('id' , newId);
+    
+});
+item.each(function(index) { debugger
+    var value1 = $(this).val();
+    var idPrefix = 'item';
+    var newId = idPrefix + roinc ;
+    newRow.find('.item').eq(index).attr('id' , newId);
+    newRow.find('.select2-container').remove();
+    newItem = $(this).val();
+});
+qnty.each(function(index) {
+    var value2 = $(this).val();
+    var idPrefix = 'qty';
+    var newId = idPrefix + roinc ;
+    newRow.find('.qty').eq(index).val(value2).attr('id' , newId);
+});
+rt.each(function(index) {
+    var value3 = $(this).val();
+    var idPrefix = 'rate';
+    var newId = idPrefix + roinc ;
+    newRow.find('.rate').eq(index).val(value3).attr('id' , newId);
+    
+});
+amnt.each(function(index) {
+    var value4 = $(this).val();
+    var idPrefix = 'amount';
+    var newId = idPrefix + roinc ;
+    newRow.find('.amount').eq(index).val(value4).attr('id' , newId);
+    
+});
+
+disc.each(function(index) {
+    var value5 = $(this).val();
+    var idPrefix = 'disc';
+    var newId = idPrefix + roinc ;
+    newRow.find('.disc').eq(index).val(value5).attr('id' , newId);
+    
+});
+accnt.each(function(index) {
+  var value6 = $(this).val();
+  var idPrefix = 'account';
+  var newId = idPrefix + roinc ;
+  newRow.find('.acnt').eq(index).val(value6).attr('id' , newId);
+    
+});
+
+intra.each(function(index){
+  var value7 = $(this).val();
+  var idPrefix = 'intra_tax';
+  var newId = idPrefix + roinc ;
+  newRow.find('.tax1').eq(index).val(value7).attr('id' , newId);
+});
+
+inter.each(function(index){
+  var value8 = $(this).val();
+  var idPrefix = 'inter_tax';
+  var newId = idPrefix + roinc ;
+  newRow.find('.tax2').eq(index).val(value8).attr('id' , newId);
+});
+
+hsn.each(function(index){  
+  var value9 = $(this).val();
+  var idPrefix = 'HSN';
+  var newId = idPrefix + roinc ;
+  newRow.find('.HSN').eq(index).val(value9).attr('id' , newId);
+});
+
+slnum.each(function(index) { debugger
+    newRow.find('.slnum').eq(index)[0].innerText = roinc+1 
+});
+stock_data_hidden.each(function(index){  
+  var value10 = $(this).val();
+  var idPrefix = 'stock_data_hidden';
+  var newId = idPrefix + roinc ;
+  newRow.find('.stock_data_hidden').eq(index).val(value10).attr('id' , newId);
+});
+stock_data.each(function(index){  debugger
+  var value11 = $(this).val();
+  var idPrefix = 'stock_data';
+  var newId = idPrefix + roinc ;
+  newRow.find('.stock_data').eq(index).attr('id' , newId);
+});
+
+var buttonCell = $('<td>').append(`
+        <button type="button" id="${roinc}" class="btn btn-outline-primary clone_row text-center mb-1 p-1 " data-toggle= "tooltip" data-placement="bottom" tooltip="Clone"
+            style = "width:25px; height: 25px; border-radius: 90% " >
+          <i class="fa-solid fa-clone"></i>
+        </button> <br>
+        <button type="button" id="${roinc}" class="btn btn-outline-danger remove_row text-center p-1" data-toggle= "tooltip" data-placement="bottom" tooltip="Remove"
+            style = "width:25px; height: 25px; border-radius: 90% " >
+          <i class="fa fa-window-close"></i>
+        </button>
+      `);
+newRow.find('td:last-child').replaceWith(buttonCell);
+
+
+row.after(newRow);
+$(`#item${roinc}`).select2();
+$(`#item${roinc}`).val(newItem);  
+$(`#item${roinc}`).trigger('change');
+$(".select2-container").width( 'auto' );
+
+
+//recalculate after new row added
+
+var row_c = $("#items-table-body tr").length;
+var amount_t = 0;
+var tax = 0;
+var tax_tot = 0;
+var ship = parseFloat( $("#addcharge").val());
+for(var i=0; i<row_c;i++){
+  amount_t += parseFloat($("#amount"+i).val());
+
+  $("#subtotal").val(amount_t);
+  
+  var tax1 = $("#intra_tax" +i).val();
+  var tax2 = $("#inter_tax" +i).val();
+  if (tax1 == 0){
+    if(tax2 == 0){
+      tax = 0;
+      tax_tot += tax;
+    }
+    else{
+      tax = (($("#qty"+i).val())*($("#rate"+i).val()))*(tax2/100) ;
+      
+      tax_tot += tax;
+      $("#igst").val(tax_tot);
+      $("#total_taxamount").val(tax_tot);
+    }
+  }
+  else{
+
+    tax = (($("#qty"+i).val())*($("#rate"+i).val()))*(tax1/100) ;
+    tax_tot += tax;
+    $("#sgst").val(tax_tot/2);
+    $("#cgst").val(tax_tot/2);
+    $("#total_taxamount").val(tax_tot);
+  }
+  if(ship){
+    $("#grandtotal").val(amount_t+tax_tot+ship)
+  }
+  else{
+    $("#grandtotal").val(amount_t+tax_tot)
+  }
+}
+
+$("#items-table-body").find('tr').each(function (i, el) { debugger
+       $(this).find('td').eq(0).text(i+1); 
+});
+});
+
+$(document).on('click','.remove_row',function(){
+
+var row_id = $(this).attr("id");
+$('#addr'+row_id+'').remove(); 
+
+$("#items-table-body").find('tr').each(function (i, el) { debugger
+       $(this).find('td').eq(0).text(i+1); 
+});
+
+$('tr[id^="addr"]').each(function(index) {
+    var new_row_id = 'addr' + (index);
+    $(this).attr('id', new_row_id);
+
+    $(this).find('select[id^="item"]').each(function(tdIndex) {
+      var new_td_id = 'item' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('input[id^="HSN"]').each(function(tdIndex) {
+      var new_td_id = 'HSN' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    
+    $(this).find('input[id^="qty"]').each(function(tdIndex) {
+      var new_td_id = 'qty' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('input[id^="rate"]').each(function(tdIndex) {
+      var new_td_id = 'rate' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('input[id^="disc"]').each(function(tdIndex) {
+      var new_td_id = 'disc' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('input[id^="amount"]').each(function(tdIndex) {
+      var new_td_id = 'amount' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('select[id^="intra_tax"]').each(function(tdIndex) {
+      var new_td_id = 'intra_tax' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('select[id^="inter_tax"]').each(function(tdIndex) {
+      var new_td_id = 'inter_tax' + (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('.clone_row').each(function(tdIndex) {
+      var new_td_id = (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('.remove_row').each(function(tdIndex) {
+      var new_td_id = (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id);
+    });
+    $(this).find('.slnum').each(function(tdIndex) { debugger
+      var new_td_id = (index * 1 + tdIndex);
+      $(this).attr('id', new_td_id); 
+    });
+
+    // $(this).find('button').each(function(tdIndex) {
+    //   var new_td_id = (index * 1 + tdIndex);
+    //   $(this).attr('id', new_td_id);
+    // });
+    // $(this).find('button[class="remove_row"]').each(function(tdIndex) {
+    //   var new_td_id1 = ((index * 1) + tdIndex);
+    //   $(this).attr('id', new_td_id1);
+    // });
+    var row_c = $("#items-table-body tr").length;
+    var amount_t = 0;
+    var tax = 0;
+    var tax_tot = 0;
+    var ship = parseFloat( $("#addcharge").val());
+    for(var i=0; i<row_c;i++){
+      amount_t += parseFloat($("#amount"+i).val());
+
+      $("#subtotal").val(amount_t);
+
+      var tax1 = $("#intra_tax" +i).val();
+      var tax2 = $("#inter_tax" +i).val();
+
+      if (tax1 == 0){
+        if(tax2 == 0){
+          tax = 0;
+          tax_tot += tax;
+        }
+        else{
+          tax = (($("#qty"+i).val())*($("#rate"+i).val()))*(tax2/100);
+          
+          tax_tot += tax;
+          // console.log(tax_tot);
+          $("#igst").val(tax_tot);
+          $("#total_taxamount").val(tax_tot);
+        }
+      }
+      else{
+
+        tax = (($("#qty"+i).val())*($("#rate"+i).val()))*(tax2/100) ;
+        tax_tot += tax;
+        $("#sgst").val(tax_tot/2);
+        $("#cgst").val(tax_tot/2);
+        $("#total_taxamount").val(tax_tot);
+      }
+      if(ship){
+        $("#grandtotal").val(amount_t+tax_tot+ship)
+      }
+      else{
+        $("#grandtotal").val(amount_t+tax_tot)
+      }
+    }
+});
+
+});
+
+</script>
+
+<!-- ----------------------------------end table--------------------------------- -->
+
+
 {% endblock %}
