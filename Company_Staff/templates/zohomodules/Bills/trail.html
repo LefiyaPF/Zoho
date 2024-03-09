@@ -3,6 +3,7 @@
 {% load static %}
 
 
+<!-- Bootstrap JS and Bootstrap SelectPicker JS -->
 
 <style> /* MODAL STYLE */
   .modal {
@@ -194,8 +195,11 @@ li{
                                                     <label for="">VENDOR NAME *</label>
                                                 </div>
                                                 <div class="input-container col-sm-6">
-                                                    <select class="form-select bg-white text-center" name="select_vendor" id="select_vendor" required>
+                                                    
+                                                    <select class="form-select  bg-white text-center" name="select_vendor" id="select_vendor" required>
+                                                        
                                                         <option value="" selected disabled>-- SELECT --</option>
+                                                        
                                                         {% for i in vendor %}
                                                             <option value="{{i.id}}">{{i.first_name}} {{i.last_name}}</option>
                                                         {% endfor %}
@@ -409,9 +413,9 @@ li{
                                                     <option value="value" selected disabled>Choose Your option</option>
 
                                                     
-                                                    <option value="Due on Receipt">Due on Receipt</option> 
-                                                    <option value="Net 30">Net 30</option>
-                                                    <option value="Net 60">Net 60</option> 
+                                                    {% for pay_terms in payment %}
+                                                    <option value="{{pay_terms.id}}" >{{pay_terms.term_name}}</option>
+                                                    {% endfor %}
                                                   
                                                       </select>
                                                 </div>
@@ -790,7 +794,7 @@ li{
                                                     <label style="color: white;">Primary Contact</label>
                                                 </div>
                                                 <div class="col-sm-12 col-md-2 col-lg-2" >
-                                                    <select id="select"  name="salutation" class="form-select bg-light text-dark mt-2 " >
+                                                    <select id="select1C"  name="salutation" class="form-select bg-light text-dark mt-2 " >
                                                     
                                                         <option value="Mr">Mr</option>
                                                         <option value="Mrs">Mrs</option>
@@ -822,7 +826,18 @@ li{
                                                 </div>
                                             </div>
                             
-                                           
+                                            <div class="form-group row mt-4">
+                                                <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label class="text-white">Customer Display Name</label></div>
+                                                <div class="col-sm-12 col-md-6 col-lg-7">
+                                                   
+                                                    <select class="form-control bg-light text-dark "  name="v_display_names" id="v_display_names">
+                                                        
+                                                    </select>
+                                                    
+                                                       
+                                                        
+                                                </div>
+                                            </div>
                             
                                            
                             
@@ -948,7 +963,7 @@ li{
                                                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white"  > GSTIN/UIN*</label>
                                                         
                                                         <div class=" col-sm-12 col-md-3 col-lg-3">
-                                                            <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gstInput" > 
+                                                            <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gstInput" aria-placeholder="11ABCDE1234F5Z6"> 
                                                             <span id="gstMessage"></span>       
                                     
                                                         </div>
@@ -963,7 +978,7 @@ li{
                                                         <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > PAN</label>
                                                         
                                                         <div class=" col-sm-12 col-md-3 col-lg-3">
-                                                            <input type="text" class="form-control bg-light text-dark"  id="panInput"  name="pan_number">  
+                                                            <input type="text" class="form-control bg-light text-dark"  id="panInput"  name="pan_number" placeholder="ABCDE1234D">  
                                                             <span id="panMessage"></span>    
                             
                                     
@@ -1144,8 +1159,7 @@ li{
                                                     
                                                     <div class=" col-sm-12 col-md-3 col-lg-3">
                                                         <select name="payment_terms" id="paytearm-select" class="form-control bg-light text-dark">
-                                                           
-                            
+                                                            <option value="value" selected disabled>Choose Your option</option>
                                                         {% for pay_terms in comp_payment_terms %}
                                                             <option value="{{pay_terms.id}}" >{{pay_terms.term_name}}</option>
                                                         {% endfor %}
@@ -1641,7 +1655,8 @@ li{
         </div>
     </div>
         <!-- ......................new vendor modal................. -->
-      
+       
+    
         <div class="modal fade" id="newvendor">
             <div class="modal-dialog modal-xl">
               <div class="modal-content" style="background: rgb(0, 0, 0);border-radius: 20px;">
@@ -1653,10 +1668,9 @@ li{
                 </div>
                 <div class="modal-body bg-black" style="background: rgb(0, 0, 0);">
                   <div class="card p-3 m-3 bg-black">
-                    <form  method="post" action="{% url 'add_vendor' %}"  enctype="multipart/form-data" class="">
+                    <form  method="post" action="{% url 'add_vendor' %}"  enctype="multipart/form-data">
                         {% csrf_token %}
-                        
-                        
+                    
                         <div class=" form-group row">
                           <div class="col-sm-12 col-md-3 col-lg-3 col-form-label">
                               <label class="text-white">Primary Contact</label>
@@ -1699,8 +1713,8 @@ li{
                               <div class="col-sm-12 col-md-3 col-lg-3 col-form-label"><label class="text-white">Vendor Display Name</label></div>
                                <div class="col-sm-12 col-md-6 col-lg-6">
                                   
-                                      <select  name="v_display_name" id="v_display_name" class="form-control bg-light text-dark " onclick="vendor_display()">
-                                      <option class="text-dark" id="select2"></option>
+                                      <select  name="v_display_name" id="v_display_name" class="form-control bg-light text-dark">
+                                     
                                           
                                       </select> 
                     
@@ -1753,7 +1767,7 @@ li{
                               <hr style="border: none; height: 2px; background-color: #ffcc00; margin: 20px 0;">
           
                               <div class="toggle1" style="color: rgb(230, 171, 45);font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;">
-                                  <a href="">More Details</a>
+                                  <a href="" style="color: rgb(230, 171, 45)">More Details</a>
           
                                </div>
            
@@ -1862,10 +1876,10 @@ li{
                               </div>
                               <fieldset3 id="gstn" style="display: none;">
                                   <div class="row mt-4">
-                                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white"  > GSTIN/UIN*</label>
+                                      <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > GSTIN/UIN*</label>
                                        
                                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input" onmouseout="gst_check()"> 
+                                          <input type="text" class="form-control bg-light text-dark" name="gst_number" id="gst_input" placeholder="11ABCDE1234F5Z6" onmouseout="gst_check()"> 
                                           <label id="gst_label"></label>     
                   
                                       </div>
@@ -1880,7 +1894,7 @@ li{
                                       <label class="col-sm-12 col-md-3 col-lg-3 col-form-label text-white" > PAN</label>
                                        
                                       <div class=" col-sm-12 col-md-3 col-lg-3">
-                                          <input type="text" class="form-control bg-light text-dark" id="pan_input" onmouseout="pan_check()" name="pan_number">  
+                                          <input type="text" class="form-control bg-light text-dark" id="pan_input" onmouseout="pan_check()" name="pan_number" placeholder="ABCDE1234D">  
                                           <label id="pan_label"></label>     
               
                   
@@ -1971,11 +1985,11 @@ li{
                                
                               <div class=" col-sm-12 col-md-3 col-lg-3">
                                   <select name="payment_terms" id="paytearm-select" class="form-control bg-light text-dark">
-                                      <option value="Due on Receipt" selected>Due on Receipt</option>
+                                    <option value="value" selected disabled>Choose Your option</option>
           
-                                      {% for pay_terms in comp_payment_terms %}
+                                      {% for pay_terms in payment %}
                                       <option value="{{pay_terms.id}}" >{{pay_terms.term_name}}</option>
-                                     {% endfor %}
+                                      {% endfor %}
                                       
                                   </select>
           
@@ -2214,9 +2228,9 @@ li{
                      
                       <fieldset6 id="contact_person" style="display: none;color: azure ; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;font-size:22px;" >
                           <div class="row">
-                              <div class="col-sm-12 ">
+                              <div class="col-sm-12 col-8">
                                   
-                                      <table id="tbl" class="table text-white" style="background-color: rgba(250, 227, 198, 0.5);">
+                                      <table id="tbl" class="table text-white table-responsive" style="background-color: rgba(250, 227, 198, 0.5);max-width: 100px;">
                                           <thead>
                                           <tr>
                                               
@@ -2315,8 +2329,56 @@ li{
             </div>  
           </div> 
         
+<!-- ......................end vendor modal................. -->
+ 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/i18n/defaults-en_US.min.js"></script>
 
-              
+<script>
+    $(document).ready(function () {
+      $('.selectpicker').selectpicker();
+    });
+  </script>
+  
+          
+<script>
+    
+const Ttle = document.getElementById('select1C');
+const ftname = document.getElementById('ftname');
+const ltname = document.getElementById('ltname');
+const vDisplayNames = document.getElementById('v_display_names');
+
+Ttle.addEventListener('input', updateOutputFields);
+ftname.addEventListener('input', updateOutputFields);
+ltname.addEventListener('input', updateOutputFields);
+
+// Function to update the output fields
+function updateOutputFields() {
+    const selectedTitle = Ttle.value;
+    const selectedFname = ftname.value;
+    const selectedLname = ltname.value;
+
+    // Clear existing options
+    vDisplayNames.innerHTML = '';
+ // Add new options based on input field values
+ const option1 = document.createElement('option');
+    option1.text = selectedTitle + ' ' + selectedFname + ' ' + selectedLname;
+    vDisplayNames.add(option1);
+
+   
+
+    const option2 = document.createElement('option');
+    option2.text = selectedFname + ' ' + selectedLname;
+    vDisplayNames.add(option2);
+
+    const option3 = document.createElement('option');
+    option3.text = selectedLname + ' ' + selectedFname;
+    vDisplayNames.add(option3);
+}
+</script>
           <script>
 
                 const Title = document.getElementById('select1');
@@ -2324,6 +2386,38 @@ li{
                 const laname = document.getElementById('lname');
                 const vDisplayName = document.getElementById('v_display_name');
 
+Title.addEventListener('input', updateOutputFields);
+fname.addEventListener('input', updateOutputFields);
+laname.addEventListener('input', updateOutputFields);
+
+// Function to update the output fields
+function updateOutputFields() {
+    const selectedTitle = Title.value;
+    const selectedFname = fname.value;
+    const selectedLname = laname.value;
+
+    // Clear existing options
+    vDisplayName.innerHTML = '';
+ // Add new options based on input field values
+ const option1 = document.createElement('option');
+    option1.text = selectedTitle + ' ' + selectedFname + ' ' + selectedLname;
+    vDisplayName.add(option1);
+
+   
+
+    const option2 = document.createElement('option');
+    option2.text = selectedFname + ' ' + selectedLname;
+    vDisplayName.add(option2);
+
+    const option3 = document.createElement('option');
+    option3.text = selectedLname + ' ' + selectedFname;
+    vDisplayName.add(option3);
+}
+
+
+
+</script>
+<script>
 
             function gstPan_function(){
                 var x=document.getElementById('GSTT').value
