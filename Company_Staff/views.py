@@ -10843,6 +10843,31 @@ def add_bill(request):
             units = Unit.objects.filter(company= dash_details)
             accounts=Chart_of_Accounts.objects.filter(company=dash_details)
             payment = Company_Payment_Term.objects.filter(company_id = dash_details)
+            last_id = Bill.objects.filter(Login_Details=log_details,Company=dash_details).order_by('-id').values('id').first()
+            bill_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details).order_by('-Bill_Number').values('Bill_Number').first()
+            ref_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details).order_by('-Reference_Number').values('Reference_Number').first()
+            print(last_id)
+            
+            bill_num = "None"
+            if bill_no !=  None:
+                bill_num1 = bill_no['Bill_Number'] 
+                bill_num = int(bill_num1) + 1
+
+            if last_id !=  None:
+                if request.user.is_authenticated:
+                    last_id = last_id['id']
+                    next_no = last_id + 1
+                else:
+                    next_no = 1
+            else:
+                next_no = 1
+
+            ref_num = "None"
+            if ref_no !=  None:
+                ref_num1 = ref_no['Reference_Number'] 
+                ref_num = int(ref_num1) + 1
+           
+  
             context = {
             'details': dash_details,
             'log_details':log_details,
@@ -10854,7 +10879,11 @@ def add_bill(request):
             'allmodules':allmodules,
             'item_obj':item_obj,
             'units':units,
-            'accounts':accounts
+            'accounts':accounts,
+            'b_no': next_no,
+            'bill_no': bill_num,
+            'rf_no': next_no,
+            'ref_no': ref_num,
             }
         
         if log_details.user_type == 'Staff':
@@ -10867,6 +10896,31 @@ def add_bill(request):
             item_obj = Items.objects.filter(company_id = dash_details.company)
             units = Unit.objects.filter(company=dash_details.company)
             accounts = Chart_of_Accounts.objects.filter(company=dash_details.company)
+            last_id = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-id').values('id').first()
+            bill_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-Bill_Number').values('Bill_Number').first()
+            ref_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-Reference_Number').values('Reference_Number').first()
+            print(last_id)
+            
+            bill_num = "None"
+            if bill_no !=  None:
+                bill_num1 = bill_no['Bill_Number'] 
+                bill_num = int(bill_num1) + 1
+
+            if last_id !=  None:
+                if request.user.is_authenticated:
+                    last_id = last_id['id']
+                    next_no = last_id + 1
+                else:
+                    next_no = 1
+            else:
+                next_no = 1
+
+            ref_num = "None"
+            if ref_no !=  None:
+                ref_num1 = ref_no['Reference_Number'] 
+                ref_num = int(ref_num1) + 1
+           
+  
             context = {
             'details': dash_details,
             'log_details':log_details,
@@ -10879,8 +10933,12 @@ def add_bill(request):
             'item_obj':item_obj,
             'units': units,
             'accounts':accounts,
+            'b_no': next_no,
+            'bill_no': bill_num,
+            'rf_no': next_no,
+            'ref_no': ref_num,
             }
-
+            
         return render(request, 'zohomodules/Bills/add_bill.html', context)
     
 def add_bill_func(request):
@@ -11291,8 +11349,202 @@ def add_customer_bill(request):
             return redirect('bill_list')
 
 
+def add_account_bill(request):
+    
+    if 'login_id' in request.session:
+        log_id = request.session['login_id']
+        if 'login_id' not in request.session:
+            return redirect('/')
+        log_details= LoginDetails.objects.get(id=log_id)
+        if log_details.user_type == 'Company':
+            company = CompanyDetails.objects.get(login_details=log_details,superadmin_approval=1,Distributor_approval=1)
+            if request.method=='POST':
+                account_type =request.POST.get('account_type')
+                account_name =request.POST.get('account_name')
+                account_code =request.POST.get('account_code')
+                
+                description =request.POST.get('description')
+            
+                accounts = Chart_of_Accounts(account_type=account_type,
+                                             account_name=account_name,
+                                             description=description,
+                                             
+                                             account_code=account_code,
+                                             company=company,
+                                             login_details=log_details)
+                accounts.save()
+                acc_id = accounts.id
+                acc_name = accounts.account_name
+                response_data = {
+                "message": "success",
+                "acc_id":acc_id,
+                "acc_name":acc_name,
+        
+                         }
+            return JsonResponse(response_data)
+              
+        if log_details.user_type == 'Staff':
+            staff = StaffDetails.objects.get(login_details=log_details)
+            company = staff.company
+            if request.method=='POST':
+                account_type =request.POST.get('account_type')
+                account_name =request.POST.get('account_name')
+                account_code =request.POST.get('account_code')
+                
+                description =request.POST.get('description')
+            
+                accounts = Chart_of_Accounts(account_type=account_type,
+                                             account_name=account_name,
+                                             description=description,
+                                             
+                                             account_code=account_code,
+                                             company=company,
+                                             login_details=log_details)
+                accounts.save()
+             
+                acc_id = accounts.id
+                acc_name = accounts.account_name
+                response_data = {
+                "message": "success",
+                "acc_id":acc_id,
+                "acc_name":acc_name,
+        
+                         }
+            return JsonResponse(response_data)
+    
+# def add_account_bill(request):                                                              
+#     login_id = request.session['login_id']
+#     log_user = LoginDetails.objects.get(id=login_id)
+#     if log_user.user_type == 'Company':
+#         company_id = request.session['login_id']
+#         if request.method == 'POST':
+#             a=Chart_of_Accounts()
+#             b=Chart_of_Accounts_History()
+#             c = CompanyDetails.objects.get(login_details=company_id)
+#             b.company=c
+#             b.logindetails=log_user
+#             b.action="Created"
+#             b.Date=date.today()
+#             a.login_details=log_user
+#             a.company=c
+          
+        
+#             a.account_type = request.POST.get("account_type",None)
+#             a.account_name = request.POST.get("account_name",None)
+#             a.account_code = request.POST.get("account_code",None)
+#             a.description = request.POST.get("description",None)
+    
+#             a.Create_status="active"
+#             ac_name=request.POST.get("account_name",None)
+#             if Chart_of_Accounts.objects.filter(account_name=ac_name, company=c).exists():
+#                 return JsonResponse({"message": "error"})
+#             else:
+          
+#                 a.save()
+#                 t=Chart_of_Accounts.objects.get(id=a.id)
+#                 b.chart_of_accounts=t
+#                 b.save()
+#                 acc_id = a.id  
+#                 acc_name=a.account_name
+#                 response_data = {
+#                 "message": "success",
+#                 "acc_id":acc_id,
+#                 "acc_name":acc_name,
+        
+#                          }
 
-                                                              #new by tinto mt
+#                 return JsonResponse(response_data)
+        
+
+#     elif log_user.user_type == 'Staff':
+#         staff_id = request.session['login_id']
+#         if request.method=='POST':
+#             a=Chart_of_Accounts()
+#             b=Chart_of_Accounts_History()
+#             staff = LoginDetails.objects.get(id=staff_id)
+#             sf = StaffDetails.objects.get(login_details=staff)
+#             c = CompanyDetails.objects.get(login_details= sf.login_details)
+#             a=sf.company
+#             b.Date=date.today()
+#             b.company=c
+#             b.logindetails=log_user
+#             a.login_details=log_user
+#             a.company=c
+          
+        
+#             a.account_type = request.POST.get("account_type",None)
+#             a.account_name = request.POST.get("account_name",None)
+#             a.account_code = request.POST.get("account_code",None)
+#             a.description = request.POST.get("description",None)
+    
+#             a.Create_status="active"
+#             ac_name=request.POST.get("account_name",None)
+#             if Chart_of_Accounts.objects.filter(account_name=ac_name, company=c).exists():
+#                 return JsonResponse({"message": "error"})
+#             else:
+          
+#                 a.save()
+#                 t=Chart_of_Accounts.objects.get(id=a.id)
+#                 b.chart_of_accounts=t
+#                 b.save()
+#                 acc_id = a.id  
+#                 acc_name=a.account_name
+#                 response_data = {
+#                 "message": "success",
+#                 "acc_id":acc_id,
+#                 "acc_name":acc_name,
+        
+#                          }
+
+#                 return JsonResponse(response_data)
+        
+      
+        
+    # return redirect('newitems')
+
+def account_dropdown_bill(request):                                                                
+    login_id = request.session['login_id']
+    log_user = LoginDetails.objects.get(id=login_id)
+    if log_user.user_type == 'Company':
+            dash_details = CompanyDetails.objects.get(login_details=log_user)
+            options = {}
+            option_objects = Chart_of_Accounts.objects.filter(Q(company=dash_details) & (Q(account_type='Expense') | Q(account_type='Other Expense') | Q(account_type='Cost Of Goods Sold')))
+            for option in option_objects:
+                account_name=option.account_name
+                account_type=option.account_type
+                options[option.id] = [account_name,f"{account_name}"]
+            return JsonResponse(options)
+    elif log_user.user_type == 'Staff':
+            dash_details = StaffDetails.objects.get(login_details=log_user)
+            options = {}
+       
+            option_objects = Chart_of_Accounts.objects.filter(Q(company=dash_details.company) & (Q(account_type='Expense') | Q(account_type='Other Expense') | Q(account_type='Cost Of Goods Sold')))
+            for option in option_objects:
+                account_name=option.account_name
+                options[option.id] = [account_name,f"{account_name}"]
+            return JsonResponse(options)
+
+
+
+def get_rate(request):
+
+    
+    if request.method=='POST':
+        id=request.POST.get('id')
+
+        item = Items.objects.get( id = id)
+         
+        rate = 0 if item.purchase_price == "" else item.purchase_price
+        hsn = 0 if item.hsn_code == "" else item.hsn_code
+        intra = 0 if item.intrastate_tax == "" else item.intrastate_tax
+        inter = 0 if item.interstate_tax == "" else item.interstate_tax
+        print(inter)
+        print(intra)
+        
+        stock =item.current_stock
+
+        return JsonResponse({"rate": rate,"hsn":hsn,"intra":intra,"inter":inter,"stock":stock},safe=False)
+
 def create_item_bill(request):                                                                #new by tinto mt
     
     login_id = request.session['login_id']
@@ -11455,7 +11707,6 @@ def get_vendor_details(request, vendor_id):
             'gstin': vendor.gst_number,
             'baddress': vendor.billing_address,
             'psupply': vendor.source_of_supply,
-            'billing_address': vendor.billing_address,
             'billing_city': vendor.billing_city,
             'billing_state': vendor.billing_state,
             'billing_pin_code': vendor.billing_pin_code,
@@ -11501,6 +11752,30 @@ def update_place_of_supply(request):
         except Vendor.DoesNotExist:
             # If the vendor is not found, return an error response
             return JsonResponse({'error': 'Vendor not found'}, status=404)
+    else:
+        # Return an error response if the request method is not POST
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+
+def update_place_of_supply_customer(request):
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer_id')
+        new_place_of_supply = request.POST.get('place_of_supply')
+
+        try:
+            # Retrieve the vendor object
+            customer = Customer.objects.get(id= customer_id)
+            # Update the place of supply
+            customer.place_of_supply = new_place_of_supply
+            # Save the changes
+            customer.save()
+
+            # Return a success response
+            return JsonResponse({'message': 'Place of supply updated successfully'})
+        
+        except Customer.DoesNotExist:
+            # If the vendor is not found, return an error response
+            return JsonResponse({'error': 'Customer not found'}, status=404)
     else:
         # Return an error response if the request method is not POST
         return JsonResponse({'error': 'Invalid request method'}, status=400)

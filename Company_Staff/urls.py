@@ -288,7 +288,6 @@ urlpatterns = [
     path('do_customer_edit/<int:pk>',views.do_customer_edit,name='do_customer_edit'),
    
     #---------------------End---------------------------------#
-
     #---------------------BILL---------------------------------#
 
     path('bill_list',views.bill_list,name="bill_list"),
@@ -296,11 +295,16 @@ urlpatterns = [
     path('add_vendor_bill/',views.add_vendor_bill,name='add_vendor_bill'),
     path('add_customer_bill/',views.add_customer_bill,name='add_customer_bill'),
     path('create_item_bill/',views.create_item_bill,name='create_item_bill'),
+    path('add_account_bill',views.add_account_bill,name='add_account_bill'),
+    path('account_dropdown_bill',views.account_dropdown_bill,name = 'account_dropdown_bill'),
+    path('get_rate',views.get_rate,name='get_rate'),
     
    
     path('get_vendor_details/<int:vendor_id>/',views.get_vendor_details, name='get_vendor_details'),
     path('get_customer_details/<int:vendor_id>/',views.get_customer_details, name='get_customer_details'),
     path('update_place_of_supply/',views.update_place_of_supply, name='update_place_of_supply'),
+    path('update_place_of_supply_customer/',views.update_place_of_supply_customer, name='update_place_of_supply'),
+    
     path('Bill_overview',views.Bill_overview,name="Bill_overview"),
     
 

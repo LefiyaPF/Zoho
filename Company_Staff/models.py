@@ -680,7 +680,7 @@ class CustomerHistory(models.Model):
     date = models.DateField(auto_now_add=True, null=True, blank=True)
 
 
-#..........................Bill...........................#
+#......................................Bill..........................................#
 
 class Bill(models.Model):
     Vendor = models.ForeignKey(Vendor,on_delete=models.CASCADE,null=True,blank=True)
