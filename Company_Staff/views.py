@@ -10998,12 +10998,12 @@ def add_bill_func(request):
                             Status = Status,)
                 bill.save()
 
-                godown_history = GodownHistory(company = company,
+                bill = Bill(company = company,
                                                login_details=log_details,
                                                godown=godown,
                                                date=date,
                                                action='Created')
-                godown_history.save()
+                bill.save()
 
 
         if log_details.user_type == 'Staff':
