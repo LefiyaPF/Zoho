@@ -10973,10 +10973,29 @@ def add_bill_func(request):
                 Balance = request.POST.get('Balance')
                 Status = request.POST.get('Status')
 
-                company = CompanyDetails.objects.get(id=company)
-                vendor = Vendor.objects.get(id=vendor)
+                items = request.POST.get('item[]')
+                HSN = request.POST.get('HSN[]')
+                Quantity = request.POST.get('qty[]')
+                Price = request.POST.get('rate[]')
+                intra_tax = request.POST.get('tax1[]')
+                inter_tax = request.POST.get('tax2[]')
+                Discount = request.POST.get('discount[]')
+                Total = request.POST.get('amount[]')
+
+                if intra_tax == None:
+                    tax = inter_tax
+                else:
+                    tax = intra_tax
+                    
+
+                vendor = Vendor.objects.get(company = company)
+                customer = Customer.objects.get( company = company)
+                
+
                 action = request.POST.get('save')
-                bill = Bill(Bill_Number=Bill_Number,
+                bill = Bill(Vendor = vendor,
+                            Customer = customer, 
+                            Bill_Number=Bill_Number,
                             Reference_Number=Reference_Number,
                             Purchase_Order_Number=Purchase_Order_Number,
                             Bill_Date=Bill_Date,
@@ -10998,12 +11017,18 @@ def add_bill_func(request):
                             Status = Status,)
                 bill.save()
 
-                bill = Bill(company = company,
-                                               login_details=log_details,
-                                               godown=godown,
-                                               date=date,
-                                               action='Created')
-                bill.save()
+                bill_items = BillItems(Items = items,
+                                       HSN = HSN,
+                                       Quantity= Quantity,
+                                       Price = Price,
+                                       Tax_Rate = tax,
+                                       Discount = Discount,
+                                       Total = Total,
+                                       Company = company,
+                                       Login_Details = log_details,
+                                       Bills = bill)
+
+                bill_items.save()
 
 
         if log_details.user_type == 'Staff':
@@ -11031,7 +11056,27 @@ def add_bill_func(request):
                 Advance_amount_Paid = request.POST.get('Advance_amount_Paid')
                 Balance = request.POST.get('Balance')
                 Status = request.POST.get('Status')
-                bill = Bill(Bill_Number=Bill_Number,
+
+                items = request.POST.get('item[]')
+                HSN = request.POST.get('HSN[]')
+                Quantity = request.POST.get('qty[]')
+                Price = request.POST.get('rate[]')
+                intra_tax = request.POST.get('tax1[]')
+                inter_tax = request.POST.get('tax2[]')
+                Discount = request.POST.get('discount[]')
+                Total = request.POST.get('amount[]')
+
+                if intra_tax == None:
+                    tax = inter_tax
+                else:
+                    tax = intra_tax
+                    
+                vendor = Vendor.objects.get(company=company)
+                customer = Customer.objects.get( company = company)
+                action = request.POST.get('save')
+                bill = Bill(Vendor = vendor,
+                            Customer = customer, 
+                            Bill_Number=Bill_Number,
                             Reference_Number=Reference_Number,
                             Purchase_Order_Number=Purchase_Order_Number,
                             Bill_Date=Bill_Date,
@@ -11053,13 +11098,18 @@ def add_bill_func(request):
                             Status = Status,)
                 bill.save()
 
-                godown_history = GodownHistory(company = company,
-                                               login_details=log_details,
-                                               godown=godown,
-                                               date=date,
-                                               action='Created')
-                godown_history.save()
-
+                bill_items = BillItems(Items = items,
+                                       HSN = HSN,
+                                       Quantity= Quantity,
+                                       Price = Price,
+                                       Tax_Rate = tax,
+                                       Discount = Discount,
+                                       Total = Total,
+                                       Company = company,
+                                       Login_Details = log_details,
+                                       Bills = bill)
+                                       
+                bill_items.save()
         
         messages.success(request,'Added Successfully')
         return redirect('add_bill')

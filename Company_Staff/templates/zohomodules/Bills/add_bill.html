@@ -28,7 +28,7 @@
     .bootstrap-select.show > .dropdown-menu {
       background-color: black !important;
     }
-    .selectpicker{
+    .select2{
         background-color: black;
         color: white;
     }
@@ -202,6 +202,7 @@
         outline: none;
         /* Remove the outline */
         color: #000;
+        background-color: black;
     }
 
     /*   
@@ -315,7 +316,7 @@
                                     </h5>
                                     {% endfor %}
                                 </div>
-                                <form method="POST" action="" enctype="multipart/form-data" id="myForm">
+                                <form method="POST" action="{% url 'add_bill_func' %}" enctype="multipart/form-data" id="myForm">
                                     {% csrf_token %}
                                     <div class="row">
                                         <div class="data  col-lg-12 col-md-12 col-sm-12">
@@ -1144,9 +1145,9 @@
                                             <input type="submit" class="btn save_btn mt-2 py-2 rounded-pill text-grey w-50 my-4 mx-2" style="width: 200px; text-align: center ;" value="SAVE CHANGES" id="save">
                                             <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4 mt-2 py-2" aria-label="Close" id="cancelButton">CANCEL</button> -->
                                             <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
-                                            onclick="saveAsDraftDialog()" value="SAVE ASDRAFT"> &nbsp;
+                                            onclick="saveAsDraftDialog()" value="SAVE AS DRAFT"> &nbsp;
                                         <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
-                                            onclick="saveAndOpenDialog()" value="SAVE CHANGES"> &nbsp;
+                                            value="SAVE CHANGES"> &nbsp;
                                         <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
                                             onclick="cancelDialog()" value="Cancel">
                                             
@@ -3293,6 +3294,38 @@
 </script>
 
 <!-- FORM RESET SCRIPT END -->
+
+<!-- -------------------------alert of bill number ------------------ -->
+<script type="text/javascript">
+    $(document).on('change','#bill_code_number', function() {
+        ord = '{{bill_no}}'
+        sale_ord = "{{sale_list}}"
+        ord_value = $('#bill_code_number').val();
+        if(sale_ord === '' ){
+            document.getElementById('dangerdiv').style.display = 'none';
+
+        }
+        else{
+            if(ord_value != ord){
+                alert('The Next Number is '+ ord)
+                document.getElementById('bill_code_number').value = ord;
+            }else{
+                document.getElementById('dangerdiv').style.display = 'none';
+            }
+        }
+        var sale_list = "{{sale_list}}";
+        salelist = sale_list.split(",");
+        for(let i=0; i<salelist.length; i++){
+            if (ord_value == salelist[i]){
+                alert('Sale Order Number already in use.')
+                document.getElementById('dangerdiv').style.display = 'none';
+                document.getElementById('bill_code_number').value = ''
+            }
+        }
+    })
+</script>
+
+<!-- ----------------------end--------------------------------- -->
 
 <!-- UNIT SCRIPT -->
 <script>
