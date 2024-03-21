@@ -49,6 +49,7 @@ from django.http.response import JsonResponse, HttpResponse
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
+
 # Create your views here.
 
 
@@ -10896,6 +10897,7 @@ def add_bill(request):
             item_obj = Items.objects.filter(company_id = dash_details.company)
             units = Unit.objects.filter(company=dash_details.company)
             accounts = Chart_of_Accounts.objects.filter(company=dash_details.company)
+            current_dt = datetime.now().date()
             last_id = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-id').values('id').first()
             bill_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-Bill_Number').values('Bill_Number').first()
             ref_no = Bill.objects.filter(Login_Details=log_details,Company=dash_details.company).order_by('-Reference_Number').values('Reference_Number').first()
@@ -10937,6 +10939,7 @@ def add_bill(request):
             'bill_no': bill_num,
             'rf_no': next_no,
             'ref_no': ref_num,
+            'current_dt':current_dt
             }
             
         return render(request, 'zohomodules/Bills/add_bill.html', context)
