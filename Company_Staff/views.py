@@ -11038,26 +11038,31 @@ def add_bill_func(request):
             staff = StaffDetails.objects.get(login_details=log_details)
             company = staff.company
             if request.method == 'POST':
-                Bill_Number = request.POST.get('Bill_No')
+                vendorID = request.POST.get('select_vendor')
+                customerID = request.POST.get('Customer')
+                Bill_Number = request.POST.get('bill_code_number')
                 Reference_Number = request.POST.get('Reference_No')
                 Purchase_Order_Number = request.POST.get('Purchase_Order_NO')
-                Bill_Date = request.POST.get('Bill_Date')
-                Company_Payment_Terms = request.POST.get('Company_Payment_Terms')
-                Due_Date = request.POST.get('Due_Date')
-                Cheque_Number = request.POST.get('Cheque_Number')
-                UPI_Id = request.POST.get('UPI_Id' )
+                Bill_Date = request.POST.get('date1')
+                Company_Payment_Terms = request.POST.get('source_supply')
+                Due_Date = request.POST.get('date2')
+                Cheque_Number = request.POST.get('Cheque')
+                UPI_Id = request.POST.get('UPI')
 
-                Description = request.POST.get('Description')
-                Document = request.POST.get('Document')
-                Sub_Total = request.POST.get('Sub_Total')
-                CGST = request.POST.get('CGST')
-                SGST = request.POST.get('SGST')
-                Tax_Amount_IGST = request.POST.get('Tax_Amount_IGST')
-                Shipping_Charge = request.POST.get('Shipping_Charge')
-                Adjustment = request.POST.get('Adjustment')
-                Grand_Total = request.POST.get('Grand_Total')
-                Advance_amount_Paid = request.POST.get('Advance_amount_Paid')
-                Balance = request.POST.get('Balance')
+                Description = request.POST.get('note')
+                Document = request.POST.get('file')
+                Sub_Total = request.POST.get('subtotal')
+
+                CGST = None if request.POST.get('cgst') == "" else  request.POST.get('cgst')
+                SGST = None if request.POST.get('sgst') == "" else  request.POST.get('sgst')
+                IGST = None if request.POST.get('igst') == "" else  request.POST.get('igst')
+
+                Tax_Amount = request.POST.get('total_taxamount')
+                Shipping_Charge = None if request.POST.get('addcharge') == "" else  request.POST.get('addcharge')
+                Adjustment = request.POST.get('add_round_off')
+                Grand_Total = request.POST.get('grand_total')
+                Advance_amount_Paid = request.POST.get('amtPaid')
+                Balance = request.POST.get('balance_amt')
                 Status = request.POST.get('Status')
 
                 items = request.POST.get('item[]')
@@ -11074,8 +11079,9 @@ def add_bill_func(request):
                 else:
                     tax = intra_tax
                     
-                vendor = Vendor.objects.get(company=company)
-                customer = Customer.objects.get( company = company)
+                vendor = Vendor.objects.get(id=vendorID)
+                customer = Customer.objects.get( id = customerID)
+                payment = Company_Payment_Term.objects.get(days=Company_Payment_Terms,company=company)
                 action = request.POST.get('save')
                 bill = Bill(Vendor = vendor,
                             Customer = customer, 
@@ -11083,7 +11089,7 @@ def add_bill_func(request):
                             Reference_Number=Reference_Number,
                             Purchase_Order_Number=Purchase_Order_Number,
                             Bill_Date=Bill_Date,
-                            Company_Payment_Terms=Company_Payment_Terms,
+                            Company_Payment_Terms = payment,
                             Due_Date=Due_Date,
                             Cheque_Number = Cheque_Number,
                             UPI_Id = UPI_Id,
@@ -11092,13 +11098,16 @@ def add_bill_func(request):
                             Sub_Total = Sub_Total,
                             CGST = CGST,
                             SGST = SGST,
-                            Tax_Amount_IGST = Tax_Amount_IGST,
+                            IGST = IGST,
+                            Tax_Amount = Tax_Amount,
                             Shipping_Charge = Shipping_Charge,
-                            Adjustment = Adjustment,
+                            Adjustment_Number = Adjustment,
                             Grand_Total =Grand_Total,
                             Advance_amount_Paid = Advance_amount_Paid,
                             Balance = Balance,
-                            Status = Status,)
+                            Status = Status,
+                            Company = company,
+                            Login_Details = log_details,)
                 bill.save()
 
                 bill_items = BillItems(Items = items,
