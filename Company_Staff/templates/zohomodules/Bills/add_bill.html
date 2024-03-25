@@ -20,18 +20,22 @@
     integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
     crossorigin="anonymous"></script>
 
+    <style>
+        /* Change background color of the selectpicker dropdown */
+        .bootstrap-select .dropdown-menu {
+            background-color: #f7f7f7; /* Change to the desired background color */
+        }
+    
+        /* Change background color of the selected option */
+        .bootstrap-select .dropdown-menu .selected {
+            background-color: #d3d3d3; /* Change to the desired background color */
+        }
+        .bootstrap-select .selectpicker {
+        background-color: #eb0d0d !important;  /* Change to the desired background color */
+    }
+    </style>
 <style>
-    .selectpicker{
-        background-color: black; 
-        color: white;
-    }
-    .select#select_vendor.form-select {
-      background-color: black !important;
-      color: white; /* Change text color to white for better contrast */
-    }
-    .bootstrap-select.show > .dropdown-menu {
-      background-color: black !important;
-    }
+    
     .select2{
         background-color: black;
         color: white;
@@ -332,7 +336,7 @@
 
                                                     <select  style="background-color: black;"
                                                         class="form-control selectpicker text-center rounded-2 py-0"
-                                                        data-live-search="true" name="select_vendor" id="select_vendor"
+                                                        data-live-search="true" data-none-selected-text="Select an option..." name="select_vendor" id="select_vendor"
                                                         required>
 
                                                         <option class="bg-white" value="" selected disabled>-- SELECT --
@@ -588,7 +592,7 @@
                                                     <label for="">PAYMENT TERMS</label>
                                                 </div>
                                                 <div class=" input-container col-sm-6">
-                                                    <select name="source_supply" id="terms"
+                                                    <select name="payment_term" id="terms"
                                                         class="form-control ">
                                                         <option value="value" selected disabled>Choose Your option
                                                         </option>
@@ -905,7 +909,7 @@
 
                                                                     <select name='item[]' id='item0'
                                                                         class="form-control item text-black border-0 px-4 select2 selectpicker text-center rounded-2 py-0"
-                                                                        data-live-search="true"
+                                                                        data-live-search="true" data-none-selected-text="Select"
                                                                         style="color: black; background-color: white;"
                                                                         onchange="showRate(this.id,this.value)">
                                                                         <option value="" selected hidden>Select
@@ -1149,11 +1153,11 @@
                                             <input type="submit" class="btn save_btn mt-2 py-2 rounded-pill text-grey w-50 my-4 mx-2" style="width: 200px; text-align: center ;" value="SAVE CHANGES" id="save">
                                             <button type="button" class="close btn save_btn rounded-pill text-grey w-50 my-4 mt-2 py-2" aria-label="Close" id="cancelButton">CANCEL</button> -->
                                             <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
-                                            onclick="saveAsDraftDialog()" value="SAVE AS DRAFT"> &nbsp;
+                                             value="DRAFT" name="save"> &nbsp;
                                         <input type="submit" class="btn text-white mt-5" style="background-color: rgb(210, 132, 30) ; "
-                                            value="SAVE CHANGES"> &nbsp;
-                                        <input type="submit" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
-                                            onclick="cancelDialog()" value="Cancel">
+                                            value="SAVE" name="save"> &nbsp;
+                                        <input type="reset" class="btn text-white mt-5" style="background-color:  rgb(59, 59, 58) ; "
+                                             value="CANCEL">
                                             
                                           </div>
                                         </div>
@@ -4740,44 +4744,38 @@
 </script>
 <!-- -----------------------due date----------------- -->
 <script>
-
-    // document.getElementById("cancelButton").addEventListener("click", function() {
-    //   document.getElementById("myForm").reset(); 
-    //   location.reload(); 
-    // });
     function toggleDateInput() {
-        var checkbox = document.getElementById("never-expire-checkbox");
-        var billDateInput = document.getElementById("date1");
-        var dateInput = document.getElementById("date2");
-    
-        if (checkbox.checked) {
-            dateInput.disabled = true; // Disable date input
-            $('#date2').val($('#date1').val()); // Set date2 value to date1 value
-            $("#terms").val("recpt");
-        } else {
-            dateInput.disabled = true; // Disable date input
-        }
+    var checkbox = document.getElementById("never-expire-checkbox");
+    var dateInput = document.getElementById("date2");
+
+    if (checkbox.checked) {
+        dateInput.disabled = true; // Disable date input
+        dateInput.value = document.getElementById("date1").value; // Set date2 value to date1 value
+    } else {
+        dateInput.disabled = false; // Enable date input
     }
-    
-    $(document).ready(function() {
-        $('#terms').change(function() {
-            var va = $(this).val();
-            var checkbox = $('#never-expire-checkbox');
-    
-            if (va == 'recpt') {
-                checkbox.prop('checked', true); // Check the checkbox
-                $('#date2').val($('#date1').val()); // Set date2 value to date1 value
-                $('#date2').prop('disabled', true); // Disable date input
-            } else {
-                checkbox.prop('checked', false); // Uncheck the checkbox
-                $('#date2').prop('disabled', true); // Disable date input
-            }
-        });
-    
-        toggleDateInput(); // Call toggleDateInput after the page loads to prevent dateInput from being enabled on page load
+}
+
+$(document).ready(function() {
+    $('#terms').change(function() {
+        var va = $(this).val();
+        var checkbox = $('#never-expire-checkbox');
+        var dateInput = $('#date2');
+
+        if (va == 'recpt') {
+            checkbox.prop('checked', true); // Check the checkbox
+            dateInput.val($('#date1').val()); // Set date2 value to date1 value
+            dateInput.prop('disabled', true); // Disable date input
+        } else {
+            checkbox.prop('checked', false); // Uncheck the checkbox
+            dateInput.prop('disabled', false); // Enable date input
+        }
     });
-    
-</script>  
+
+    toggleDateInput(); // Call toggleDateInput after the page loads to prevent dateInput from being enabled on page load
+});
+
+</script>
 
 <!-- ------------------------------end------------------------------- -->
 <script>
@@ -5127,11 +5125,7 @@
             row.after(clone);
         });
 
-        // Remove Row
-        $(document).on('click', '.remove_row', function () {
-            var row = $(this).closest('tr');
-            row.remove();
-        });
+        
     
     
         clone.each(function (index) {
@@ -6847,6 +6841,12 @@ else{
 }
   
 }
+</script>
+<script>
+    $(document).on("change", "#amtPaid", function(){
+     var balance = parseFloat($("#grandtotal").val()) - parseFloat($("#amtPaid").val()) 
+     $("#balanceam_t").val(balance);
+   }); 
 </script>
 <script>
 function isGST()

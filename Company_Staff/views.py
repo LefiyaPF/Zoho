@@ -11044,8 +11044,10 @@ def add_bill_func(request):
                 Reference_Number = request.POST.get('Reference_No')
                 Purchase_Order_Number = request.POST.get('Purchase_Order_NO')
                 Bill_Date = request.POST.get('date1')
-                Company_Payment_Terms = request.POST.get('source_supply')
+                Company_Payment_Terms = request.POST.get('payment_term')
+                print(Company_Payment_Terms)
                 Due_Date = request.POST.get('date2')
+                print(Due_Date)
                 Cheque_Number = request.POST.get('Cheque')
                 UPI_Id = request.POST.get('UPI')
 
@@ -11089,6 +11091,7 @@ def add_bill_func(request):
                             Reference_Number=Reference_Number,
                             Purchase_Order_Number=Purchase_Order_Number,
                             Bill_Date=Bill_Date,
+                            Payment_Method = payment.term_name,
                             Company_Payment_Terms = payment,
                             Due_Date=Due_Date,
                             Cheque_Number = Cheque_Number,
@@ -11107,7 +11110,8 @@ def add_bill_func(request):
                             Balance = Balance,
                             Status = Status,
                             Company = company,
-                            Login_Details = log_details,)
+                            Login_Details = log_details,
+                            Action = action)
                 bill.save()
 
                 bill_items = BillItems(Items = items,
@@ -11122,9 +11126,22 @@ def add_bill_func(request):
                                        Bills = bill)
                                        
                 bill_items.save()
+
+                BReference = Bill_Reference(Reference_Number = Reference_Number,
+                                            Company = company,
+                                            Login_Details=log_details,
+                                            Bill=bill)
+                BReference.save()
+
+                History = Bill_History(Company = company,
+                                        Login_Details=log_details,
+                                        Bill=bill,
+                                        Date=Bill_Date,
+                                        Action = 'Entered')
+                History.save()
         
-        messages.success(request,'Added Successfully')
-        return redirect('add_bill')
+    messages.success(request,'Added Successfully')
+    return redirect('bill_list')
 
 
 def add_vendor_bill(request):
@@ -11403,12 +11420,12 @@ def add_customer_bill(request):
         
             messages.success(request, 'Data saved successfully!')   
 
-            return redirect('bill_list')
+            return redirect('add_bill')
         
         else:
             messages.error(request, 'Some error occurred !')   
 
-            return redirect('bill_list')
+            return redirect('add_bill')
 
 
 def add_account_bill(request):
