@@ -10906,7 +10906,9 @@ def add_bill(request):
             bill_num = "None"
             if bill_no !=  None:
                 bill_num1 = bill_no['Bill_Number'] 
-                bill_num = int(bill_num1) + 1
+                bill_num2 = int(bill_num1) + 1
+                bill_num = 'B'+ str(bill_num2)
+                
 
             if last_id !=  None:
                 if request.user.is_authenticated:
