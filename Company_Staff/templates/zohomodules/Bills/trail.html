@@ -6892,3 +6892,18 @@ document.getElementById("forms").addEventListener("submit", function (event) {
 <!-- --------------------------end item calc------------------- -->
 
 {% endblock %}
+
+
+$.ajax({
+    url: 'url', // URL to send the request to
+    method: 'GET', // HTTP method ('GET', 'POST', etc.)
+    dataType: 'json', // Expected data type ('json', 'xml', 'html', etc.)
+    success: function(data, textStatus, xhr) {
+        // Callback function to handle a successful request
+        console.log(data);
+    },
+    error: function(xhr, textStatus, errorThrown) {
+        // Callback function to handle errors
+        console.error('Request failed with status:', xhr.status);
+    }
+});

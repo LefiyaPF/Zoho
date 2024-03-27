@@ -10906,8 +10906,8 @@ def add_bill(request):
             bill_num = "None"
             if bill_no !=  None:
                 bill_num1 = bill_no['Bill_Number'] 
-                bill_num2 = int(bill_num1) + 1
-                bill_num = 'B'+ str(bill_num2)
+                bill_num = int(bill_num1) + 1
+                # bill_num = 'B'+ str(bill_num2)
                 
 
             if last_id !=  None:
@@ -11270,12 +11270,12 @@ def add_vendor_bill(request):
         
             messages.success(request, 'Data saved successfully!')   
 
-            return redirect('add_bill')
+            return HttpResponse({"message": "success"})
         
         else:
             messages.error(request, 'Some error occurred !')   
 
-            return redirect('add_bill')
+            return HttpResponse({"message": "success"})
 
 
 def add_customer_bill(request):
@@ -11420,14 +11420,43 @@ def add_customer_bill(request):
                                 work_phone=ele[4],mobile=ele[5],skype=ele[6],designation=ele[7],department=ele[8],company=comp_details,customer=vendor)
                 
         
-            messages.success(request, 'Data saved successfully!')   
+            messages.success(request, 'Data saved successfully!') 
 
-            return redirect('add_bill')
+            data = {
+                "id" : customer_data.id,
+                "Fname" : customer_data.first_name,
+                "Lname" : customer_data.last_name,
+            }  
+
+            return JsonResponse({"message": "success","data" : data})
         
         else:
             messages.error(request, 'Some error occurred !')   
 
-            return redirect('add_bill')
+            return JsonResponse({"message": "success","data" : data})
+        
+
+# def customer_dropdown(request):
+#     print("123")
+#     options = {}
+#     option_objects = Customer.objects.all()
+#     for option in option_objects:
+#         options[option.id] = {
+#             'customerFName': option.first_name,
+#             'customerLName': option.last_name,
+#         }
+#     return JsonResponse(options)
+
+def customer_dropdown(request):
+    print("123")
+    options = {}
+    option = Customer.objects.latest('id')
+    data = {
+        'id': option.id,
+        'customerFName': option.first_name,
+        'customerLName': option.last_name,
+    }
+    return JsonResponse(data)
 
 
 def add_account_bill(request):

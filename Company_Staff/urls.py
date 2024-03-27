@@ -299,6 +299,8 @@ urlpatterns = [
     path('add_account_bill',views.add_account_bill,name='add_account_bill'),
     path('account_dropdown_bill',views.account_dropdown_bill,name = 'account_dropdown_bill'),
     path('get_rate',views.get_rate,name='get_rate'),
+    path('customer_dropdown',views.customer_dropdown,name='customer_dropdown'),
+    
     
    
     path('get_vendor_details/<int:vendor_id>/',views.get_vendor_details, name='get_vendor_details'),

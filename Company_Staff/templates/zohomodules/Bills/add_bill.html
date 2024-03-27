@@ -1188,7 +1188,7 @@
             </div>
             <div class="modal-body" style="background: rgb(2, 2, 2);">
                 <div class="card p-3 m-3 bg-black">
-                    <form method="post" action="{% url 'add_vendor_bill' %}" enctype="multipart/form-data" class="mb-3">
+                    <form method="post" action="" enctype="multipart/form-data" class="mb-3" id="modalVendor">
                         {% csrf_token %}
 
                         <div class=" form-group row">
@@ -1833,8 +1833,7 @@
 
                         <div class="row mt-5">
                             <div class="col-sm-12 col-md-2 col-lg-2 mt-3">
-                                <button type="submit" class="btn btn-outline-warning form-control bg-warning text-dark"
-                                    style="font-weight: bold;">Save</button>
+                                <input type="submit" class="btn btn-outline-warning form-control bg-warning text-dark" data-dismiss="modal" id="vendorSave" style="font-weight: bold;" value="save">
 
                             </div>
 
@@ -1937,8 +1936,8 @@
             </div>
             <div class="modal-body" style="background: rgb(2, 2, 2);">
                 <div class="card p-3 m-3 bg-black">
-                    <form method="post" action="{% url 'add_customer_bill' %}" enctype="multipart/form-data"
-                        class="mb-3">
+                    <form method="post" action="" enctype="multipart/form-data"
+                        class="mb-3" id="modalCustomer">
                         {% csrf_token %}
 
                         <div class="form-group row mt-4">
@@ -2789,8 +2788,7 @@
 
                         <div class="row mt-5">
                             <div class="col-sm-12 col-md-2 col-lg-2 mt-3">
-                                <button type="submit" class="btn btn-outline-warning form-control bg-warning text-dark"
-                                    style="font-weight: bold;">Save</button>
+                                <input type="submit" class="btn btn-outline-warning form-control bg-warning text-dark" data-dismiss="modal" id="customerSave" style="font-weight: bold;" value="save">
 
                             </div>
 
@@ -3665,9 +3663,6 @@
   </div>
   </div>
   
-        <!-- MODAL account END -->   
-  
-        <!-- MODAL account END -->
 <!-- -----------------------------------end accound modal---------------------- -->
 
 
@@ -6974,4 +6969,178 @@ document.getElementById("forms").addEventListener("submit", function (event) {
 
 <!-- --------------------------end item calc------------------- -->
 
+<!-- --------------------------------vendor modal js---------------------- -->
+<script>
+    $(document).on("click","#vendorSave",function(){
+
+var formData = $("#modalVendor").serialize(); // Serialize the form data
+formData += '&csrfmiddlewaretoken=' + '{{ csrf_token }}'; // Append the CSRF token
+
+$.ajax({
+  
+  type : 'POST',
+  url:"{% url 'add_vendor_bill' %}",
+  data: formData,
+    success: function(response) {
+      document.getElementById("modalVendor").reset();
+      reloadVendor();
+    },
+  error: function(xhr, status, error) {
+    console.error(error);
+    // Handle error here
+  }
+});        
+});
+
+function reloadVendor() {
+
+$.ajax({
+  url: "{% url 'add_vendor_bill' %}",
+  type: "GET",
+  dataType: "json",
+  data: $(this).serialize(),
+  csrfmiddlewaretoken: '{{ csrf_token }}',
+
+  success: function(data) { debugger
+    var dropdown = $('#vendor');
+    dropdown.empty();
+    dropdown.append($('<option></option>').text('Select Vendor'));
+    $.each(data, function(key, value) {
+      dropdown.append($('<option></option>').attr('value', key).text(value[1] + ' ' + value[2]).val(value[3]+' '+ value[1] + ' ' + value[2]));
+    });
+  },
+  error: function(xhr, status, error) {
+  console.error(xhr.responseText);
+  }
+});
+}
+
+</script>
+
+<!-- ------------------------vendor modal js-------------- -->
+
+<!-- ------------------------------customer modal js------------------- -->
+<script>
+    //---------modal customer-----
+
+// $(document).on("click","#customerSave",function(){
+
+// var formData = $("#modalCustomer").serialize(); // Serialize the form data
+
+// formData += '&csrfmiddlewaretoken=' + '{{ csrf_token }}'; // Append the CSRF token
+
+// $.ajax({
+//   type : 'POST',
+//   url:"{% url 'add_customer_bill' %}",
+//   data: formData,
+//   success: function(response) {
+//     document.getElementById("modalCustomer").reset();
+//     reloadCustomer();
+//   },
+//   error: function(xhr, status, error) {
+//     console.error(error); 
+//   } 
+// });        
+// });
+
+
+
+
+// $(document).on("click","#customerSave",function(){
+
+// var formData = $("#modalCustomer").serialize(); // Serialize the form data
+
+// formData += '&csrfmiddlewaretoken=' + '{{ csrf_token }}'; // Append the CSRF token
+
+// $.ajax({
+//   type : 'POST',
+//   url:"{% url 'add_customer_bill' %}",
+//   data: formData,
+//   success: function(response) {
+//     document.getElementById("modalCustomer").reset();
+//     alert('customer added')
+//     var dropdown = $('#SelectCustomer');
+//     dropdown.append($('<option></option>').attr('value', response.data.id).text(response.data.id + ' ' + response.data.Lname));
+//     alert('added customer to dropdown')
+    
+//   },
+//   error: function(xhr, status, error) {
+//     console.error(error); 
+//   } 
+// });
+// });
+
+
+// function reloadCustomer() {
+
+// $.ajax({
+//   url: "{% url 'customer_dropdown' %}",
+//   type: "GET",
+//   dataType: "json",
+//   data: $(this).serialize(),
+//   csrfmiddlewaretoken: '{{ csrf_token }}',
+
+//   success: function(data) {
+//     alert("success")
+//     var dropdown = $('#SelectCustomer');
+//     dropdown.empty();
+//     dropdown.append($('<option></option>').text('Select Customer'));
+//     $.each(data, function(key, value) {
+//         dropdown.append($('<option></option>').attr('value', key).text(value.customerFName));
+//     });
+//   },
+//   error: function(xhr, status, error) {
+//   alert("error")
+//   console.error(xhr.responseText);
+//   }
+// });
+// }
+
+
+function reloadCustomer() {
+    $.ajax({
+        url: "{% url 'customer_dropdown' %}",
+        type: "GET",
+        dataType: "json",
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}'
+        },
+        success: function(data) {
+            $("#modalCustomer").reset();
+            alert('added customer to dropdown')
+            var dropdown = $('#SelectCustomer');
+            dropdown.append($('<option></option>').attr('value', data.id).text(data.customerFName).val(data.id + ' ' + data.customerFName));
+        },
+        error: function(xhr, status, error) {
+            alert("failed: " + error);
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+// function reloadCustomer() {
+
+// $.ajax({
+//   url: "{% url 'customer_dropdown' %}",
+//   type: "GET",
+//   dataType: "json",
+//   data: $(this).serialize(),
+//   csrfmiddlewaretoken: '{{ csrf_token }}',
+
+//   success: function(data) {debugger
+    
+//     var dropdown = $('#SelectCustomer');
+//     dropdown.empty();
+//     dropdown.append($('<option></option>').text('Select Customer'));
+//     $.each(data, function(key,value) {
+//         dropdown.append($('<option></option>').attr('value',value.id).text(data.customerFName + ' ' + data.customerLName));
+//     });
+//   },
+//   error: function(xhr, status, error) {
+//   console.error(xhr.responseText);
+// }
+// });
+// }
+</script>
+<!-- --------------------------------customer modal js--------------- -->
 {% endblock %}
